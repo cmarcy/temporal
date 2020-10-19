@@ -1,0 +1,6 @@
+import pandas as pd
+solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
+x = solar_dur
+x_name = 'solar'
+x_name2 = 'Solar_Gen'
+x_column = 'TRG_Avg'
