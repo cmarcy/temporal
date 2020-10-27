@@ -5,14 +5,16 @@
 
 # In[62]:
 
+print('start initial data read')
+print()
 
 #importing packages needed for analysis
 import os
-import numpy as np
 import pandas as pd
-import math
-from pandas import DataFrame
-from itertools import cycle
+#import numpy as np
+#import math
+#from pandas import DataFrame
+#from itertools import cycle
 pd.set_option('display.max_rows',500)
 
 path = os.getcwd()
@@ -27,10 +29,12 @@ if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
 print('output files are written out in parent directory: '+outputs_dir)
 print()
+
+print('LOAD')
 load_raw = pd.read_csv('inputs/load_duration_curves_raw_data.csv')
-print(load_raw.head(2))
-print()
-print('number of rows in dataset =', load_raw.shape[0])
+#print(load_raw.head(2))
+#print()
+#print('number of rows in initial load dataset =', load_raw.shape[0])
 
 
 # In[63]:
@@ -40,14 +44,14 @@ print('number of rows in dataset =', load_raw.shape[0])
 
 #create temporary copy to make changes on
 load_org = load_raw.copy()
-print('number of rows in dataset (including CN) =',load_org.shape[0])
+print('number of rows in initial load dataset (including CN) =',load_org.shape[0])
 
 #Regional IDs
 unique_r = pd.Series(load_org['Region'].unique()).dropna()
 rl = unique_r.str.split("_",n=1,expand=True)
 rl[2] = unique_r
 #print(rl)
-print('number of regions in dataset (including CN) =',unique_r.shape[0])
+print('number of regions in initial load dataset (including CN) =',unique_r.shape[0])
 
 #Cleaning up the empty subgroups
 #print(rl[rl.isna().any(axis=1)])
@@ -60,7 +64,7 @@ rl.loc[rl[0] == 'FRCC', 1] = 'FRCC'
 rl[0] = rl[0].replace('NENGREST','NENG')
 rl[0] = rl[0].replace('WECC','WEC')
 unique_g = pd.Series(rl[0].unique()).dropna()
-print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
+print('number of regional groups in load dataset (including CN) =',unique_g.shape[0])
 rl.rename(columns={0 : 'R_Group', 1: 'Drop', 2:'Region'},inplace=True)
 rl = rl[['R_Group','Region']]
 
@@ -71,8 +75,8 @@ rl['R_Subgroup']=rl['Region']
 
 #Merging Regional Data to DF
 load_org = pd.merge(rl,load_org,on='Region',how='right')
-print()
-print(load_org.head(2))
+#print()
+#print(load_org.head(2))
 
 #Removing Canada
 load_org = load_org[load_org['R_Group']!="CN"]
@@ -138,21 +142,23 @@ unique_hc = pd.Series(load_dur['HOY'].unique()).dropna()
 #organized long format data to new csv file
 load_dur = load_dur[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act','Load']]
 load_dur.to_csv('../outputs/load_long_format.csv')
-print(load_dur.tail(2))
+#print(load_dur.tail(2))
 print()
-print('number of rows in dataset =',load_dur.shape[0])
-print('number of regs in dataset =',load_dur.shape[0]/8760)
+print('number of rows in final load dataset =',load_dur.shape[0])
+print('check above matches: 24 X',load_org.shape[0],'=',load_org.shape[0]*24)
+print('number of regs in final load dataset =',load_dur.shape[0]/8760)
+print()
 
 
 # # Solar Data Prep
 
 # In[65]:
 
-
+print('SOLAR')
 solar_raw = pd.read_csv('inputs/solar_generation.csv')
-print(solar_raw.head(2))
-print()
-print('number of rows in dataset =', solar_raw.shape[0])
+#print(solar_raw.head(2))
+#print()
+#print('number of rows in initial solar dataset =', solar_raw.shape[0])
 
 
 # In[66]:
@@ -162,14 +168,14 @@ print('number of rows in dataset =', solar_raw.shape[0])
 
 #create temporary copy to make changes on
 solar_org = solar_raw.copy()
-print('number of rows in dataset (including CN) =',solar_org.shape[0])
+print('number of rows in initial solar dataset (including CN) =',solar_org.shape[0])
 
 #Regional IDs
 unique_r = pd.Series(solar_org['Region'].unique()).dropna()
 rl = unique_r.str.split("_",n=1,expand=True)
 rl[2] = unique_r
 #print(rl)
-print('number of regions in dataset (including CN) =',unique_r.shape[0])
+print('number of regions in initial solar dataset (including CN) =',unique_r.shape[0])
 
 #Cleaning up the empty subgroups
 #print(rl[rl.isna().any(axis=1)])
@@ -182,7 +188,7 @@ rl.loc[rl[0] == 'FRCC', 1] = 'FRCC'
 rl[0] = rl[0].replace('NENGREST','NENG')
 rl[0] = rl[0].replace('WECC','WEC')
 unique_g = pd.Series(rl[0].unique()).dropna()
-print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
+print('number of regional groups solar in dataset (including CN) =',unique_g.shape[0])
 rl.rename(columns={0 : 'R_Group', 1: 'Drop', 2:'Region'},inplace=True)
 rl = rl[['R_Group','Region']]
 rl['R_Subgroup']=rl['Region']
@@ -191,8 +197,10 @@ rl['R_Subgroup']=rl['Region']
 #Merging Regional Data to DF
 solar_org = pd.merge(rl,solar_org,on='Region',how='right')
 solar_org['Region'] = solar_org['State'] + "_" + solar_org['R_Subgroup'] 
-print()
-print(solar_org.head(2))
+#print()
+#print(solar_org.head(2))
+unique_r = pd.Series(solar_org['Region'].unique()).dropna()
+print('number of regions (REG+ST) in solar dataset (including CN) =',unique_r.shape[0])
 
 #Creating State+Region column
 
@@ -233,7 +241,7 @@ solar_dur['Solar_Gen']=solar_dur['Solar_Gen']/1000
 season_month = pd.read_csv('inputs/season_months.csv')
 solar_dur = pd.merge(solar_dur,season_month, on='Month', how='left')
 solar_dur = solar_dur.sort_values(['Region','Month','Day'])
-print(solar_dur.head())
+#print(solar_dur.head())
 #print(solar_dur.shape)
 
 
@@ -247,7 +255,7 @@ solar_dur2 = solar_dur2.drop_duplicates(['Region','R_Group','R_Subgroup','State'
 
 #loops through the TRGs, creates a column for each one, decreases the number of rows in DF
 #Note: It would be better to set this up to find the TRG numbers and then do the loop 
-        #instead of hard coding in the TRG numbers here
+        #instead of hard coding in the TRG numbers range(3,9) here
 for n in range(3,9):
     #print(n)
     solar_subset = solar_dur.loc[solar_dur['TRG'] == n].reset_index(drop=True)
@@ -257,10 +265,10 @@ for n in range(3,9):
 
 #creates an average TRG column
 solar_dur2['TRG_Avg'] = solar_dur2[['TRG3','TRG4','TRG5','TRG6','TRG7','TRG8']].mean(axis=1)
-print(solar_dur2.head())
-print()
-print('number of rows in dataset =',solar_dur2.shape[0])
-print('number of regs in dataset =',solar_dur2.shape[0]/8760)   
+#print(solar_dur2.head())
+#print()
+#print('number of rows in dataset =',solar_dur2.shape[0])
+#print('number of regs in dataset =',solar_dur2.shape[0]/8760)   
 
 
 # In[69]:
@@ -284,6 +292,9 @@ solar_dur4 = pd.merge(solar_dur3,l_col,on=['R_Subgroup','HOY'],how='left')
 #print(solar_dur4.shape[0]/8760)
 
 #Remove regions without load data (only removes ERC_PHDL)
+print()
+print('number of rows in solar dataset (including missing load) =',solar_dur4.shape[0])
+print('number of regs in solar dataset (including missing load) =',solar_dur4.shape[0]/8760)
 solar_dur4 = solar_dur4.dropna(subset=['Load_Act'])
 #print(solar_dur4.shape[0]/8760)
 
@@ -291,20 +302,21 @@ solar_dur4 = solar_dur4.dropna(subset=['Load_Act'])
 solar_dur4 = solar_dur4[['Region','R_Group','R_Subgroup','State','Season','Month','DOY','Hour','HOY',
                          'Load_Act','TRG3','TRG4','TRG5','TRG6','TRG7','TRG8','TRG_Avg']]
 solar_dur4.to_csv('../outputs/solar_long_format.csv')
-print(solar_dur4.tail())
-print('number of rows in dataset =',solar_dur4.shape[0])
-print('number of regs in dataset =',solar_dur4.shape[0]/8760)
-
+#print(solar_dur4.tail())
+print()
+print('number of rows in final solar dataset =',solar_dur4.shape[0])
+print('number of regs in final solar dataset =',solar_dur4.shape[0]/8760)
+print()
 
 # # Wind Data Prep
 
 # In[70]:
 
-
+print('WIND')
 wind_raw = pd.read_csv('inputs/onshore_wind_gen.csv')
-print(wind_raw.head(2))
-print()
-print('number of rows in dataset =', wind_raw.shape[0])
+#print(wind_raw.head(2))
+#print()
+#print('number of rows in dataset =', wind_raw.shape[0])
 
 
 # In[71]:
@@ -314,14 +326,14 @@ print('number of rows in dataset =', wind_raw.shape[0])
 
 #create temporary copy to make changes on
 wind_org = wind_raw.copy()
-print('number of rows in dataset (including CN) =',wind_org.shape[0])
+print('number of rows in initial wind dataset (including CN) =',wind_org.shape[0])
 
 #Regional IDs
 unique_r = pd.Series(wind_org['Region'].unique()).dropna()
 rl = unique_r.str.split("_",n=1,expand=True)
 rl[2] = unique_r
 #print(rl)
-print('number of regions in dataset (including CN) =',unique_r.shape[0])
+print('number of regions in initial wind dataset (including CN) =',unique_r.shape[0])
 
 #Cleaning up the empty subgroups
 #print(rl[rl.isna().any(axis=1)])
@@ -343,8 +355,10 @@ rl['R_Subgroup']=rl['Region']
 #Merging Regional Data to DF
 wind_org = pd.merge(rl,wind_org,on='Region',how='right')
 wind_org['Region'] = wind_org['State'] + "_" + wind_org['R_Subgroup'] 
-print()
-print(wind_org.head(2))
+#print()
+#print(wind_org.head(2))
+unique_r = pd.Series(wind_org['Region'].unique()).dropna()
+print('number of regions (REG+ST) in wind dataset (including CN) =',unique_r.shape[0])
 
 #used to see if its day or DOY value, if DOY then rename
 unique_d = pd.Series(wind_org['Day'].unique()).dropna()
@@ -380,9 +394,9 @@ wind_dur = pd.concat(wind_dur)
 
 #loops through the TRGs, creates a column for each one, decreases the number of rows in DF
 #Note: It would be better to set this up to find the TRG numbers and then do the loop 
-        #instead of hard coding in the TRG numbers here
+        #instead of hard coding in the TRG numbers range(1,9) here
 
-for n in range(1,7):
+for n in range(1,9):
     #print(n)
     
     wind_subset = wind_org.loc[wind_org['TRG'] == n].reset_index(drop=True)
@@ -401,17 +415,17 @@ for n in range(1,7):
 
 
 #create new seasons column
-print(wind_dur.head())
-print()
-print('number of rows in dataset =',wind_dur.shape[0])
+#print(wind_dur.head())
+#print()
+#print('number of rows in dataset =',wind_dur.shape[0])
 
 
 # In[77]:
 
 
 #Averages TRG data
-wind_dur['TRG_Avg'] = wind_dur[['TRG1','TRG2','TRG3','TRG4','TRG5','TRG6']].mean(axis=1)
-wind_dur = wind_dur.dropna(subset=['TRG_Avg'])
+wind_dur['TRG_Avg'] = wind_dur[['TRG1','TRG2','TRG3','TRG4','TRG5','TRG6','TRG7','TRG8']].mean(axis=1)
+#wind_dur = wind_dur.dropna(subset=['TRG_Avg'])
 
 #adds season data
 season_month = pd.read_csv('inputs/season_months.csv')
@@ -433,13 +447,20 @@ wind_dur_fin = pd.merge(wind_dur2,l_col,on=['R_Subgroup','HOY'],how='left')
 #print(wind_dur_fin.shape[0]/8760)
 
 #Remove regions without load data (only removes ERC_PHDL)
+print()
+print('number of rows in wind dataset (including missing load) =',wind_dur_fin.shape[0])
+print('number of regs in wind dataset (including missing load) =',wind_dur_fin.shape[0]/8760)
 wind_dur_fin = wind_dur_fin.dropna(subset=['Load_Act'])
 #print(wind_dur_fin.shape[0]/8760)
 
 #organized long format data to new csv file
 wind_dur_fin = wind_dur_fin[['Region','R_Group','R_Subgroup','State','Season','Month','DOY','Hour','HOY',
-                             'Load_Act','TRG1','TRG2','TRG3','TRG4','TRG5','TRG6','TRG_Avg']]
+                             'Load_Act','TRG1','TRG2','TRG3','TRG4','TRG5','TRG6','TRG7','TRG8','TRG_Avg']]
 wind_dur_fin.to_csv('../outputs/wind_long_format.csv')
-print(wind_dur_fin.tail(3))
-print('number of rows in dataset =',wind_dur_fin.shape[0])
-print('number of regs in dataset =',wind_dur_fin.shape[0]/8760)
+#print(wind_dur_fin.tail(3))
+print()
+print('number of rows in final wind dataset =',wind_dur_fin.shape[0])
+print('number of regs in final wind dataset =',wind_dur_fin.shape[0]/8760)
+print()
+
+print('completed initial data read')

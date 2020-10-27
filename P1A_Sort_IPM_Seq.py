@@ -24,14 +24,11 @@ load_dur = pd.read_csv('../outputs/load_long_format.csv')
 solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
 wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
 
-#global file sets x variables throughout code, similar to commented out code below
-import global1
-
 ## UNCOMMENT WHICH PROFILE TO BE USED WHEN TESTING
-#x = load_dur
-#x_name = 'load'
-#x_name2 = 'Load'
-#x_column = 'Load'
+x = load_dur
+x_name = 'load'
+x_name2 = 'Load'
+x_column = 'Load'
 
 #x = solar_dur
 #x_name = 'solar'
