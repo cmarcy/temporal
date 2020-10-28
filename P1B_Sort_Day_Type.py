@@ -3,13 +3,15 @@
 
 # In[385]:
 
+print('start day-type approaches')
+print()
 
 #importing packages needed for analysis
 import os
-import numpy as np
 import pandas as pd
-import math
-from pandas import DataFrame
+#import numpy as np
+#import math
+#from pandas import DataFrame
 
 path = os.getcwd()
 #print(path)
@@ -19,15 +21,15 @@ solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
 wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
 
 ## UNCOMMENT WHICH PROFILE TO BE USED
-x = load_dur
-x_name = 'load'
-x_name2 = 'Load'
-x_column = 'Load'
+#x = load_dur
+#x_name = 'load'
+#x_name2 = 'Load'
+#x_column = 'Load'
 
-#x = solar_dur
-#x_name = 'solar'
-#x_name2 = 'Solar_Gen'
-#x_column = 'TRG_Avg'
+x = solar_dur
+x_name = 'solar'
+x_name2 = 'Solar_Gen'
+x_column = 'TRG_Avg'
 
 #x = wind_dur
 #x_name = 'wind'
@@ -41,30 +43,36 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
-print('output files are written out in parent directory: '+outputs_dir)
+#print('output files are written out in parent directory: '+outputs_dir)
 
 outputs_x = outputs_dir+'/'+x_name
 if not os.path.exists(outputs_x):
     os.makedirs(outputs_x)
 print('output files are written out in parent directory: '+outputs_x)
 
+print(x_name, 'setup')
+print()
+
 #for testing only, should display a small number of regions
 #x = x[x['R_Group']=='ERC']
 
 x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act',x_column]]
 years = pd.read_csv('inputs/years.csv').dropna()
+print('number of rows in initial dataset =',x.shape[0])
 #print(x.head())
 
 unique_r = pd.Series(x['Region'].unique()).dropna()
 #print(unique_r)
 reg_count = unique_r.shape[0]
-print(reg_count)
+print('Number of regions in initial dataset =',len(unique_r))
+print('Number of rows per region in initial dataset =',x.shape[0]/len(unique_r))
+print()
 
 
 # In[386]:
 
 
-import datetime
+#import datetime
 daydata = pd.read_csv('inputs/days_365.csv')
 #print(daydata.tail())
 daydata = daydata.drop(columns='Month')
@@ -88,12 +96,12 @@ x2['DOW'] = x2['Date'].dt.weekday
 weekday = pd.read_csv('inputs/weekday.csv')
 x2 = pd.merge(x2,weekday,on='DOW',how='left')
 x2 = x2.drop(columns=['Year','Day','DOW','Week'])
-print(x2.tail())
-print('number of rows in dataset =',x2.shape[0])
-print('number of regions in dataset =',x2.shape[0]/8760)
+#print(x2.tail())
+#print('number of rows in dataset =',x2.shape[0])
+#print('number of regions in dataset =',x2.shape[0]/8760)
 
 
-# ## Case 1: Monthly, single day type, 24 hours (288 segments)
+print('Case 1: Monthly, single day type, 24 hours (288 segments)')
 # #### Methodology: Using groupby function to group first by month, then by 24 hours
 # 
 
@@ -109,16 +117,16 @@ case1.columns = ['Region','Month','Hour','Hour_Tot','Avg']
 #print(case1.head())
 #case1.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_1dt_mon_24hr.csv')
 print('number of segments in dataset =',case1.shape[0]/reg_count)
-print()
 
 case1_x2 = pd.merge(case1_x,case1,on=['Region','Month','Hour'],how='left')
 case1_x2 = case1_x2.sort_values(['Region',x_column])
-print(case1_x2.head(3))
+#print(case1_x2.head(3))
 print('number of rows in dataset =',case1_x2.shape[0])
+print()
 case1_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_1dt_mon_24hr.csv')
 
 
-# ## Case 2: Season, single day-type, 24 hours (72 segments)
+print('Case 2: Season, single day-type, 24 hours (72 segments)')
 # #### Methodology: Use groupby function to group by season and hour
 
 # In[354]:
@@ -138,16 +146,16 @@ case2.columns = ['Region','Season','Hour','Hour_Tot','Avg']
 #print(case2.head())
 print('number of segments in dataset =',case2.shape[0]/reg_count)
 #case2.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_1dt_sea_24hr.csv')
-print()
 
 case2_x2 = pd.merge(case2_x,case2,on=['Region','Season','Hour'],how='left')
 case2_x2 = case2_x2.sort_values(['Region',x_column])
-print(case2_x2.head(3))
+#print(case2_x2.head(3))
 print('number of rows in dataset =',case2_x2.shape[0])
+print()
 case2_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_1dt_sea_24hr.csv')
 
 
-# ## Case 3: Monthly, weekend/weekday, 24 hours (576 segments)
+print('Case 3: Monthly, weekend/weekday, 24 hours (576 segments)')
 # #### Metholodogy: Use groupby function to group by month, then weekend/weekday, then by 24 hours
 
 # In[355]:
@@ -162,12 +170,12 @@ case3.columns = ['Region','Month','Weekday','Hour','Hour_Tot','Avg']
 #print(case1.head())
 print('number of segments in dataset =',case3.shape[0]/reg_count)
 #case3.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_2dt_mon_24hr.csv')
-print()
 
 case3_x2 = pd.merge(case3_x,case3,on=['Region','Month','Weekday','Hour'],how='left')
 case3_x2 = case3_x2.sort_values(['Region',x_column])
-print(case3_x2.head())
+#print(case3_x2.head())
 print('number of rows in dataset =',case3_x2.shape[0])
+print()
 case3_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_2dt_mon_24hr.csv')
 
 
@@ -181,10 +189,11 @@ interval_4hr = pd.read_csv('inputs/interval_4hr.csv')
 #print(interval_4hr)
 
 x3 = pd.merge(x2,interval_4hr,on='Hour',how='left')
-print(x3.tail())
+#print(x3.tail())
 
-
-# ## Case 5: Monthly, single day type, 4 hour intervals (72 segments)
+print('removed case 4')
+print()
+print('Case 5: Monthly, single day type, 4 hour intervals (72 segments)')
 # #### Methodology: use groupby by month, 4 hour intervals
 
 # In[357]:
@@ -199,16 +208,16 @@ case5.columns = ['Region','Month','4-hr','Hour_Tot','Avg']
 #print(case5.head())
 print('number of segments in dataset =',case5.shape[0]/reg_count)
 #case5.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_1dt_mon_4hr.csv')
-print()
 
 case5_x2 = pd.merge(case5_x,case5,on=['Region','Month','4-hr'],how='left')
 case5_x2 = case5_x2.sort_values(['Region',x_column])
-print(case5_x2.head())
+#print(case5_x2.head())
 print('number of rows in dataset =',case5_x2.shape[0])
+print()
 case5_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_1dt_mon_4hr.csv')
 
 
-# ## Case 6: Bi-monthly weekend/weekday day-types, 4-hour int (72 segs)
+print('Case 6: Bi-monthly weekend/weekday day-types, 4-hour int (72 segs)')
 # #### Methodology: use groupby function and bimonthly groups
 
 # In[358]:
@@ -228,20 +237,19 @@ case6.columns = ['Region','Bimonth','Weekday','4-hr','Hour_Tot','Avg']
 #print(case6.head())
 print('number of segments in dataset =',case6.shape[0]/reg_count)
 #case6.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_2dt_bim_4hr.csv')
-print()
 
 case6_x2 = pd.merge(case6_x,case6,on=['Region','Bimonth','Weekday','4-hr'],how='left')
 case6_x2 = case6_x2.sort_values(['Region',x_column])
-print(case6_x2.head())
+#print(case6_x2.head())
 print('number of rows in dataset =',case6_x2.shape[0])
+print()
 case6_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_2dt_bim_4hr.csv')
 
 
-# ## Case 7: Season-based months, weekend/weekday day-types, 4-hour intervals (60 segs)
+print('Case 7: Season-based months, weekend/weekday day-types, 4-hour intervals (60 segs)')
 # #### Methodology: groupby function and applied season groups
 
 # In[359]:
-
 
 case7_x = x3.copy()
 case7_seasons = pd.read_csv('inputs/season_bimonthly.csv')
@@ -258,12 +266,12 @@ case7.columns = ['Region','Season_Group','Weekday','4-hr','Hour_Tot','Avg']
 #print(case7.head())
 print('number of segments in dataset =',case7.shape[0]/reg_count)
 #case7.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_2dt_sgp_4hr.csv')
-print()
 
 case7_x2 = pd.merge(case7_x,case7,on=['Region','Season_Group','Weekday','4-hr'],how='left')
 case7_x2 = case7_x2.sort_values(['Region',x_column])
-print(case7_x2.head())
+#print(case7_x2.head())
 print('number of rows in dataset =',case7_x2.shape[0])
+print()
 case7_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_2dt_sgp_4hr.csv')
 
 
@@ -299,7 +307,7 @@ md_max.columns = ['R_Subgroup','Month','Load_MD_Max']
 peakd = pd.merge(md_sum2,md_max,on=['R_Subgroup','Month'],how='left')
 #print(peakd.columns)
 peakd = peakd[['R_Subgroup','DOY','Hour','Load_MD_Tot','Load_MD_Max']]
-print(peakd.tail())
+#print(peakd.tail())
 
 
 # In[361]:
@@ -314,11 +322,13 @@ x_peak.loc[x_peak['Day_Type'] == True, 'Day_Type'] = 'Weekday'
 x_peak.loc[x_peak['Day_Type'] == False, 'Day_Type'] = 'Weekend'
 x_peak.loc[x_peak['Load_MD_Tot'] == x_peak['Load_MD_Max'], 'Day_Type'] = 'Peak'
 x_peak = x_peak.drop(['Load_MD_Tot','Load_MD_Max'], axis=1)
-print(x_peak[23:25])
-print(x_peak[47:49])
+#print(x_peak[23:25])
+#print(x_peak[47:49])
 
+print('3 day types')
+print()
 
-# ## Case 1: Monthly, 3 day-types, 24 hours (864 segments)
+print('Case 1: Monthly, 3 day-types, 24 hours (864 segments)')
 # #### Methodology: similar to two day type, just adding in peak day types to sort by
 
 # In[362]:
@@ -333,19 +343,19 @@ case1.columns = ['Region','Month','Day_Type','Hour','Hour_Tot','Avg']
 #print(case1.head())
 print('number of segments in dataset =',case1.shape[0]/reg_count)
 #case1.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_3dt_mon_24hr.csv')
-print()
 
 case1_x2 = pd.merge(case1_x,case1,on=['Region','Month','Day_Type','Hour'],how='left')
 case1_x2 = case1_x2.sort_values(['Region',x_column])
-print(case1_x2.head(3))
+#print(case1_x2.head(3))
 print('number of rows in dataset =',case1_x2.shape[0])
+print()
 case1_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_3dt_mon_24hr.csv')
 
-
-# ## Case 3: Annual, 3 day-types, 24-hours (72 segments)
+print('removed case 2')
+print()
+print('Case 3: Annual, 3 day-types, 24-hours (72 segments)')
 
 # In[363]:
-
 
 case3_x = x_peak.copy()
 
@@ -356,12 +366,12 @@ case3.columns = ['Region','Day_Type','Hour','Hour_Tot','Avg']
 #print(case3.head())
 print('number of segments in dataset =',case3.shape[0]/reg_count)
 #case3.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_3dt_ann_24hr.csv')
-print()
 
 case3_x2 = pd.merge(case3_x,case3,on=['Region','Day_Type','Hour'],how='left')
 case3_x2 = case3_x2.sort_values(['Region',x_column])
-print(case3_x2.head(3))
+#print(case3_x2.head(3))
 print('number of rows in dataset =',case3_x2.shape[0])
+print()
 case3_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_3dt_ann_24hr.csv')
 
 
@@ -376,10 +386,11 @@ case3_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_3dt_ann_24hr.csv')
 #print(x_peak.head())
 
 x_peak2 = pd.merge(x_peak,interval_4hr,on='Hour',how='left')
-print(x_peak2.head(5))
+#print(x_peak2.head(5))
 
-
-# ## Case 5: Season-based months, 3 day-types, 4-hour intervals (90 segs)
+print('removed case 4')
+print()
+print('Case 5: Season-based months, 3 day-types, 4-hour intervals (90 segs)')
 
 # In[365]:
 
@@ -398,16 +409,16 @@ case5.columns = ['Region','Season_Group','Day_Type','4-hr','Hour_Tot','Avg']
 #print(case5.head())
 print('number of segments in dataset =',case5.shape[0]/reg_count)
 #case5.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_3dt_sgp_4hr.csv')
-print()
 
 case5_x2 = pd.merge(case5_x,case5,on=['Region','Season_Group','Day_Type','4-hr'],how='left')
 case5_x2 = case5_x2.sort_values(['Region',x_column])
-print(case5_x2.head())
+#print(case5_x2.head())
 print('number of rows in dataset =',case5_x2.shape[0])
+print()
 case5_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_3dt_sgp_4hr.csv')
 
 
-# ## Case 6: Season, 3 day-types, 4-hour intervals (54 Segments)
+print('Case 6: Season, 3 day-types, 4-hour intervals (54 Segments)')
 
 # In[382]:
 
@@ -421,16 +432,16 @@ case6.columns = ['Region','Season','Day_Type','4-hr','Hour_Tot','Avg']
 #print(case6.head())
 print('number of segments in dataset =',case6.shape[0]/reg_count)
 #case6.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_3dt_sea_4hr.csv')
-print()
 
 case6_x2 = pd.merge(case6_x,case6,on=['Region','Season','Day_Type','4-hr'],how='left')
 case6_x2 = case6_x2.sort_values(['Region',x_column])
-print(case6_x2.head())
+#print(case6_x2.head())
 print('number of rows in dataset =',case6_x2.shape[0])
+print()
 case6_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_3dt_sea_4hr.csv')
 
 
-# ## Extra Case: 24-hours, average weekly
+print('Case 7: 24-hours, average weekly (1248 Segments)')
 
 # In[387]:
 
@@ -440,32 +451,32 @@ daydata = pd.read_csv('inputs/days_365.csv')
 daydata = daydata.drop(columns='Month')
 week = pd.merge(x,daydata,on=['DOY'],how='left')
 week = week.drop(columns=['Day'])
-print(week.tail())
-print('number of rows in dataset =',week.shape[0])
-print('number of regions in dataset =',week.shape[0]/8760)
-
+#print(week.tail())
+#print('number of rows in dataset =',week.shape[0])
+#print('number of regions in dataset =',week.shape[0]/8760)
 
 # In[388]:
 
-
+#had to remove seasons from the groupby because some weeks overlapped two season
 aggregations = {x_column:['count','mean']}
-wcase = week.groupby(['Region','Season','Week','Hour'],as_index=False).agg(aggregations)
+wcase = week.groupby(['Region','Week','Hour'],as_index=False).agg(aggregations)
 wcase.columns = wcase.columns.droplevel(0)
-wcase.columns = ['Region','Season','Week','Hour','Hour_Tot','Avg']
-print(wcase.head())
-print('number of segments in dataset =',wcase.shape[0]/reg_count)
-#case6.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_3dt_sea_4hr.csv')
-print()
 
-wcase_x = pd.merge(week,wcase,on=['Region','Season','Week','Hour'],how='left')
+wcase.columns = ['Region','Week','Hour','Hour_Tot','Avg']
+#print(wcase.head())
+print('number of segments in dataset =',wcase.shape[0]/reg_count)
+#wcase.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_weekly_24hr.csv')
+
+wcase_x = pd.merge(week,wcase,on=['Region','Week','Hour'],how='left')
 wcase_x = wcase_x.sort_values(['Region',x_column])
-print(wcase_x.head())
+#print(wcase_x.head())
 print('number of rows in dataset =',wcase_x.shape[0])
-print('number of regs in dataset =',wcase_x.shape[0]/8760)
+print()
 
 wcase_x.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_weekly_24hr.csv')
 
-
+print('finished day-type approaches')
+print()
 # In[ ]:
 
 

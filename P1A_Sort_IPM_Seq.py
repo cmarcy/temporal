@@ -3,19 +3,21 @@
 
 # # Data here: 
 # ## IPM Approach (2 profiles) 
-# ## Sequential Approach (9 profiles) 
+# ## Sequential Approach (9ish profiles) 
 
 # # Import Long Format 8760 
 
 # In[624]:
 
+print('start current model approaches and sequential approaches')
+print()
 
 #importing packages needed for analysis
 import os
-import numpy as np
 import pandas as pd
-import math
-from pandas import DataFrame
+#import numpy as np
+#import math
+#from pandas import DataFrame
 
 path = os.getcwd()
 #print(path)
@@ -25,20 +27,20 @@ solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
 wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
 
 ## UNCOMMENT WHICH PROFILE TO BE USED WHEN TESTING
-x = load_dur
-x_name = 'load'
-x_name2 = 'Load'
-x_column = 'Load'
+#x = load_dur
+#x_name = 'load'
+#x_name2 = 'Load'
+#x_column = 'Load'
 
 #x = solar_dur
 #x_name = 'solar'
 #x_name2 = 'Solar_Gen'
 #x_column = 'TRG_Avg'
 
-#x = wind_dur
-#x_name = 'wind'
-#x_name2 = 'Wind_Gen'
-#x_column = 'TRG_Avg'
+x = wind_dur
+x_name = 'wind'
+x_name2 = 'Wind_Gen'
+x_column = 'TRG_Avg'
 
 #this code creates an output directory in the parent director, if one does not exist yet
 #Note: this is where all of the output files will be written, since outputs are large this saves space in git
@@ -47,12 +49,15 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
-print('output files are written out in parent directory: '+outputs_dir)
+#print('output files are written out in parent directory: '+outputs_dir)
 
 outputs_x = outputs_dir+'/'+x_name
 if not os.path.exists(outputs_x):
     os.makedirs(outputs_x)
 print('output files are written out in parent directory: '+outputs_x)
+print()
+
+print(x_name, 'setup')
 print()
 
 #for testing only, should display a small number of regions
@@ -61,12 +66,12 @@ print()
 #Initial dataset
 unique_r = pd.Series(x['Region'].unique()).dropna()
 x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act',x_column]]
-print(x.tail(2))
+#print(x.tail(2))
+#print()
+print('Number of regions in initial dataset',len(unique_r))
 print()
-print('Number of regions',len(unique_r))
 
-
-# # Case 1: Normal IPM Approach (72 Representative Hours)
+print('Normal IPM Approach (Max of 72 Representative Hours)')
 # ### Details: Split into 3 seasons, then 6 groups, then 4 times of day
 # #### Methodology: Use counters to keep track of season split, then use groupby function to find load averages
 
@@ -81,9 +86,9 @@ tod = pd.read_csv('inputs/time_of_day.csv')
 
 #merge the time of data categories to the dataframe
 x2 = pd.merge(x,tod,on='Hour',how='left')
-print()
-print(x2.head(2))
-print(x2.shape)
+#print()
+#print(x2.head(2))
+#print(x2.shape)
 
 
 # In[626]:
@@ -100,8 +105,8 @@ seasons = seasons[['Season','HOY']]
 #get the number of hours in each season
 season_count = seasons.groupby('Season',as_index=False).count().rename(columns={'HOY':'Season_Tot'})
 season_count = season_count.sort_values('Season')
-print(season_count)
-print()
+#print(season_count)
+#print()
 
 #read in the group shares data
 group = pd.read_csv('inputs/group_shares.csv')
@@ -119,18 +124,18 @@ group_sea['Season_Counter'] = group_sea['Sea-G_Tot'].cumsum()
 group_sea['Season_Counter'] = round(group_sea['Season_Counter'])
 #print(group.dtypes)
 #print(group)
-print(group_sea)
-print()
+#print(group_sea)
+#print()
 
 #Create a dataframe with 8760 numbers
 unique_hc = pd.Series(x['HOY'].unique()).dropna()
 unique_hc = pd.DataFrame(unique_hc,columns=['Season_Counter'])
 unique_hc['Season_Counter'] = unique_hc['Season_Counter']*1.0
 season_8760 = pd.merge_asof(unique_hc, group_sea, on='Season_Counter', direction='forward')
-print(unique_hc.tail())
-print(season_8760.head(3))
-print(season_8760.tail(3))
-print(season_8760.shape)
+#print(unique_hc.tail())
+#print(season_8760.head(3))
+#print(season_8760.tail(3))
+#print(season_8760.shape)
 
 
 # In[627]:
@@ -142,16 +147,16 @@ x2 = x2.sort_values(['Region','Season','Load_Act'], ascending=[True, True, False
 x2 = x2.reset_index(drop=True)
 x2['Season_Counter'] = ( ( x2.index + 8760 ) % 8760 ) + 1
 x2['Season_Counter'] = x2['Season_Counter'].astype(int)
-print(x2.head(2))
+#print(x2.head(2))
 #print(x2.dtypes)
 
 #Merge seasonal group data to the full dataframe
 x3 = pd.merge(x2,season_8760,on='Season_Counter',how='left')
 x3 = x3.drop(columns=['Season_Counter','Share','Seasons','Sea-G_Tot'])
-print()
-print(x3.tail(2))
-print()
-print('number of rows for each region =',x3.shape[0]/len(unique_r))
+#print()
+#print(x3.tail(2))
+#print()
+#print('number of rows for each region =',x3.shape[0]/len(unique_r))
 
 
 # In[628]:
@@ -166,54 +171,16 @@ norm.columns = ['Region','Season','Group','TOD','Hour_Tot','Avg']
 #print(norm.head(3))
 print('number segments for each region =',norm.shape[0]/len(unique_r))
 #norm.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_norm.csv')
-print()
+#print()
 
 x4 = pd.merge(x3,norm,on=['Region','Season','Group','TOD'],how='left')
 x4 = x4.sort_values(['Region',x_column])
-print(x4.head(3))
+#print(x4.head(3))
 print('number of rows in dataset for each region =',x4.shape[0]/len(unique_r))
 x4.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_norm.csv')
 
-
-# In[629]:
-
-
-get_ipython().run_line_magic('matplotlib', 'inline')
-import matplotlib.pyplot as plt
-
-x4 = x4.sort_values(by=['Region','Season',x_column],ascending=[True, True, False])
-plt.plot(x4[x_column].values)
-plt.title('IPM modeled load')
-plt.xlabel('Hours')
-plt.ylabel(x_name2)
-
-x4 = x4.sort_values(by=['Region','Season','Avg'],ascending=[True, True, False])
-plt.plot(x4['Avg'].values)
-plt.title(x_name2+' comparison')
-plt.xlabel('hours')
-plt.ylabel(x_name2)
-
-plt.show()
-
-
-# In[630]:
-
-
-fig, axis = plt.subplots()
-
-axis.yaxis.grid(True)
-axis.set_title(x_name2+' comparison')
-axis.set_xlabel('modeled load')
-axis.set_ylabel('actual load')
-
-X = x4['Avg']
-Y = x4[x_column]
-
-axis.scatter(X, Y)
-plt.show()
-
-
-# # Case 2: Grouping Time of Day before Group
+print()
+print('Alternative IPM Approach (72 Representative Hours)')
 # ### Details: Regions will be split first by season, then time of day, then group
 # #### Methodology: Use same methods & code as norm case, but switch order of groupby for group and time of day
 
@@ -228,8 +195,8 @@ tod = pd.read_csv('inputs/time_of_day.csv')
 
 #merge the time of data categories to the dataframe
 tod_x = pd.merge(x,tod,on='Hour',how='left')
-print()
-print(tod_x.head(2))
+#print()
+#print(tod_x.head(2))
 
 
 # In[632]:
@@ -247,8 +214,8 @@ seasons = seasons[['Season','TOD','HOY']]
 season_count = seasons.groupby(['Season','TOD'],as_index=False).count().rename(columns={'HOY':'ST_Tot'})
 season_count = season_count.sort_values('Season')
 season_count['Sea_TOD'] = season_count['Season']+"_"+season_count['TOD']
-print(season_count)
-print()
+#print(season_count)
+#print()
 
 #read in the group shares data
 group = pd.read_csv('inputs/group_shares.csv')
@@ -271,9 +238,9 @@ unique_hc2 = pd.DataFrame(unique_hc2,columns=['STG_Counter'])
 unique_hc2['STG_Counter'] = unique_hc2['STG_Counter']*1.0
 STG_8760 = pd.merge_asof(unique_hc2, group_STG, on='STG_Counter', direction='forward')
 #print(unique_hc.tail())
-print(STG_8760.head())
-print(STG_8760.tail(3))
-print(STG_8760.shape)
+#print(STG_8760.head())
+#print(STG_8760.tail(3))
+#print(STG_8760.shape)
 #print()
 
 
@@ -293,11 +260,11 @@ tod_x['STG_Counter'] = tod_x['STG_Counter'].astype(int)
 #Merge seasonal group data to the full dataframe
 tod_x_2 = pd.merge(tod_x,STG_8760,on='STG_Counter',how='left')
 tod_x_2 = tod_x_2.drop(columns=['STG_Counter','Share','Sea_TOD','STG_Tot'])
-print(tod_x_2.head(2))
-print()
-print(tod_x_2.tail(2))
-print()
-print('number of rows in dataset =',tod_x_2.shape[0])
+#print(tod_x_2.head(2))
+#print()
+#print(tod_x_2.tail(2))
+#print()
+#print('number of rows in dataset =',tod_x_2.shape[0])
 
 
 # In[634]:
@@ -312,41 +279,17 @@ case2.columns = ['Region','Season','TOD','Group','Hour_Tot','Avg']
 #print(case2.head(3))
 print('number of segments for each region =',case2.shape[0]/len(unique_r))
 #case2.to_csv('../outputs/'+x_name+'/'+x_name+'_segments_timeofday.csv')
-print()
+#print()
 
 tod_x_3 = pd.merge(tod_x_2,case2,on=['Region','Season','TOD','Group'],how='left')
 tod_x_3 = tod_x_3.sort_values(['Region',x_column])
-print(tod_x_3.head(3))
+#print(tod_x_3.head(3))
 print('number of rows in dataset =',tod_x_3.shape[0]/len(unique_r))
 tod_x_3.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_timeofday.csv')
 
-
-# ### Plot of a single region
-
-# In[635]:
-
-
-#plot when testing a single region 
-get_ipython().run_line_magic('matplotlib', 'inline')
-import matplotlib.pyplot as plt
-
-tod_x_3 = tod_x_3.sort_values(by=['Region','Season',x_column],ascending=[True, True, False])
-plt.plot(tod_x_3[x_column].values)
-plt.title('IPM modeled load')
-plt.xlabel('Hours')
-plt.ylabel(x_name2)
-
-tod_x_3 = tod_x_3.sort_values(by=['Region','Season','Avg'],ascending=[True, True, False])
-plt.plot(tod_x_3['Avg'].values)
-plt.title(x_name2+' comparison')
-plt.xlabel('hours')
-plt.ylabel(x_column)
-
-plt.show()
-
-
-# # Sequential Approach 
-# ### Details: Split into different hour intervals (1, 2, 4, 8, 12, 24, 48, 120, 8760) to test the accuracy of the load estimations
+print()
+print('Sequential Approach')
+# ### Details: Split into different hour intervals (e.g. 1, 2, 4, 8, 12, ..., 8760) to test the accuracy of the load estimations
 # #### Methodology: use a single csv numbered from 1 to 8760 to identify the groups that each hour will go in 
 
 # In[636]:
@@ -355,14 +298,14 @@ plt.show()
 #load useful info into notebook
 seq_intervals = pd.read_csv('inputs/sequential_hours.csv')
 seq_x = pd.merge(x, seq_intervals, on='HOY', how='left')
-print(seq_x.head(9))
+#print(seq_x.head(9))
 
 hr_list = seq_intervals.columns[1:]
 print(hr_list)
 print()
 
 for i in hr_list:
-    #print(i)
+    print(i)
     #average load based on order of groups
     aggregations = {x_column:['count','mean']}
     case = seq_x.groupby(['Region',i],as_index=False).agg(aggregations)
@@ -375,7 +318,7 @@ for i in hr_list:
     print('number of hours for each region =',seq_x.shape[0]/len(unique_r))
     print()
 
-print(seq_x.head(1))
+#print(seq_x.head(1))
 
 
 # In[637]:
@@ -384,7 +327,7 @@ print(seq_x.head(1))
 #This just exports the data into separate csv files
 #Note: I know I can print these in a loop with a dictionary, but this seemed easier at the time... 
 
-print(seq_x.columns)
+#print(seq_x.columns)
 
 #hr-1
 seq_1hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_1-hr',x_column, 
@@ -426,9 +369,10 @@ seq_8760hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act',
                     '8760-hr','Avg_8760-hr']].rename(columns={'8760-hr':'Seg_ID','HT_8760-hr':'Hour_Tot','Avg_8760-hr':'Avg'})
 seq_8760hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_8760hr.csv')
 
-print(seq_1hr.head())
-print(seq_8760hr.head())
+#print(seq_1hr.head())
+#print(seq_8760hr.head())
 
+print('completed current model approaches and sequential approaches')
 
 # In[ ]:
 

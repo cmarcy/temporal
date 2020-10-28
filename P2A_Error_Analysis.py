@@ -5,13 +5,15 @@
 
 # In[177]:
 
+print('start error analysis')
+print()
 
 #importing packages needed for analysis
 import os
-import numpy as np
 import pandas as pd
-import math
-from pandas import DataFrame
+#import numpy as np
+#import math
+#from pandas import DataFrame
 
 path = os.getcwd()
 #print(path)
@@ -25,9 +27,6 @@ if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
 print('output files are written out in parent directory: '+outputs_dir)
 
-#global file sets x variables throughout code, similar to commented out code below
-import global2
-
 ##UNCOMMENT WHICH PROFILE BEING ANALYZED 
 #x = 'load'
 #x2 = 'Load'
@@ -35,13 +34,15 @@ import global2
 #x = 'solar'
 #x2 = 'TRG_Avg'
 
-#x = 'wind'
-#x2 = 'TRG_Avg'
+x = 'wind'
+x2 = 'TRG_Avg'
 
 outputs_dir_x = parent+'\outputs\error_analysis/'+x
 if not os.path.exists(outputs_dir_x):
     os.makedirs(outputs_dir_x)
 
+print(x, 'setup')
+print()
 
 # In[178]:
 
@@ -58,10 +59,10 @@ reg_hr['reg_hr'] = reg_hr['Region'] + '-' + reg_hr['HOY'].astype(str)
 RH_list = reg_hr['reg_hr'].unique()
 RH_list = pd.DataFrame(RH_list).rename(columns={0:'reg_hr'})
 print(len(RH_list)/8760)
-print(RH_list[0:3])
+#print(RH_list[0:3])
 
 filelist = []
-print(parent+'/outputs/'+x)
+#print(parent+'/outputs/'+x)
 files = os.listdir(parent+'/outputs/'+x)
 for f in files:
     filelist.append(f)
@@ -83,10 +84,10 @@ import time;
 ts = time.time()
 #print(ts)
 
+print('start of loop... wait for it...')
 for i in filelist:
     y=len(x)+6
     n=i[y:-4]
-    print(n)
     
     stat = pd.read_csv('../outputs/'+x+'/'+i)
     stat = stat[['Region','Season','Month','DOY','HOY','Hour_Tot',x2,'Avg']]
@@ -119,15 +120,20 @@ for i in filelist:
     stat2[n] = stat2[n].values
     prof_RMSE.update({n : (stat2[n])})
 
+    #print(x, n, 'error calculated')
+
+print('end of loop')
+print()
 tf = time.time()
 #print(tf)
-print()
-print((tf-ts)/60,'minutes to solve loop')
+#print((tf-ts)/60,'minutes to solve loop')
 
 #profile_diff.to_csv('../outputs/error_analysis/'+x+'_'+'profile_diff.csv')
 reg_RMSE.to_csv('../outputs/error_analysis/'+x+'_'+'regional_RMSE.csv')
 profile_df = pd.DataFrame.from_dict(prof_RMSE,orient='index').rename(columns={0:'RMSE'})
 profile_df.to_csv('../outputs/error_analysis/'+x+'_'+'profile_RMSE.csv')
+
+print('end of error analysis')
 
 
 # In[ ]:
