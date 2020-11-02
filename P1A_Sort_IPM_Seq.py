@@ -5,8 +5,6 @@
 # ## IPM Approach (2 profiles) 
 # ## Sequential Approach (9ish profiles) 
 
-# # Import Long Format 8760 
-
 # In[624]:
 
 print('start current model approaches and sequential approaches')
@@ -16,8 +14,6 @@ print()
 import os
 import pandas as pd
 #import numpy as np
-#import math
-#from pandas import DataFrame
 
 path = os.getcwd()
 #print(path)
@@ -71,12 +67,11 @@ x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load
 print('Number of regions in initial dataset',len(unique_r))
 print()
 
+# In[625]:
+
 print('Normal IPM Approach (Max of 72 Representative Hours)')
 # ### Details: Split into 3 seasons, then 6 groups, then 4 times of day
 # #### Methodology: Use counters to keep track of season split, then use groupby function to find load averages
-
-# In[625]:
-
 
 #Assign the time of day (TOD) categories to hours
 
@@ -90,9 +85,7 @@ x2 = pd.merge(x,tod,on='Hour',how='left')
 #print(x2.head(2))
 #print(x2.shape)
 
-
 # In[626]:
-
 
 #Assign the Group categories to season/hours
 
@@ -137,9 +130,7 @@ season_8760 = pd.merge_asof(unique_hc, group_sea, on='Season_Counter', direction
 #print(season_8760.tail(3))
 #print(season_8760.shape)
 
-
 # In[627]:
-
 
 #Assign the load group categories to each of the 8760 hours
 
@@ -158,9 +149,7 @@ x3 = x3.drop(columns=['Season_Counter','Share','Seasons','Sea-G_Tot'])
 #print()
 #print('number of rows for each region =',x3.shape[0]/len(unique_r))
 
-
 # In[628]:
-
 
 x3 = x3.sort_values(['Region','Season','Group','TOD'])
 
@@ -179,13 +168,12 @@ x4 = x4.sort_values(['Region',x_column])
 print('number of rows in dataset for each region =',x4.shape[0]/len(unique_r))
 x4.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_norm.csv')
 
+# In[631]:
+
 print()
 print('Alternative IPM Approach (72 Representative Hours)')
 # ### Details: Regions will be split first by season, then time of day, then group
 # #### Methodology: Use same methods & code as norm case, but switch order of groupby for group and time of day
-
-# In[631]:
-
 
 #Assign the time of day (TOD) categories to hours
 
@@ -198,9 +186,7 @@ tod_x = pd.merge(x,tod,on='Hour',how='left')
 #print()
 #print(tod_x.head(2))
 
-
 # In[632]:
-
 
 #Assign the Group categories to season/hours
 
@@ -243,9 +229,7 @@ STG_8760 = pd.merge_asof(unique_hc2, group_STG, on='STG_Counter', direction='for
 #print(STG_8760.shape)
 #print()
 
-
 # In[633]:
-
 
 #Assign the load group categories to each of the 8760 hours
 
@@ -266,9 +250,7 @@ tod_x_2 = tod_x_2.drop(columns=['STG_Counter','Share','Sea_TOD','STG_Tot'])
 #print()
 #print('number of rows in dataset =',tod_x_2.shape[0])
 
-
 # In[634]:
-
 
 tod_x_2 = tod_x_2.sort_values(['Region','Season','TOD','Group'])
 
@@ -287,15 +269,13 @@ tod_x_3 = tod_x_3.sort_values(['Region',x_column])
 print('number of rows in dataset =',tod_x_3.shape[0]/len(unique_r))
 tod_x_3.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_timeofday.csv')
 
-print()
-print('Sequential Approach')
-# ### Details: Split into different hour intervals (e.g. 1, 2, 4, 8, 12, ..., 8760) to test the accuracy of the load estimations
-# #### Methodology: use a single csv numbered from 1 to 8760 to identify the groups that each hour will go in 
-
 # In[636]:
 
+print()
+print('Sequential Approach')
+# ### Details: Split into different hour intervals (e.g. 1, 2, 4, 8, 12, ..., 8760)
 
-#load useful info into notebook
+#the interval DF defines groups across all 8760 HOY for each interval type
 seq_intervals = pd.read_csv('inputs/sequential_hours.csv')
 seq_x = pd.merge(x, seq_intervals, on='HOY', how='left')
 #print(seq_x.head(9))
@@ -318,64 +298,9 @@ for i in hr_list:
     print('number of hours for each region =',seq_x.shape[0]/len(unique_r))
     print()
 
+    seq_x2 = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_'+i,x_column, 
+                 i,'Avg_'+i]].rename(columns={i:'Seg_ID','HT_'+i:'Hour_Tot','Avg_'+i: 'Avg'})
+    seq_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_'+i+'.csv')
 #print(seq_x.head(1))
 
-
-# In[637]:
-
-
-#This just exports the data into separate csv files
-#Note: I know I can print these in a loop with a dictionary, but this seemed easier at the time... 
-
-#print(seq_x.columns)
-
-#hr-1
-seq_1hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_1-hr',x_column, 
-                 '1-hr','Avg_1-hr']].rename(columns={'1-hr':'Seg_ID','HT_1-hr':'Hour_Tot','Avg_1-hr': 'Avg'})
-seq_1hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_1hr.csv')
-
-#hr-2
-seq_2hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_2-hr',x_column,
-                 '2-hr','Avg_2-hr']].rename(columns={'2-hr':'Seg_ID','HT_2-hr':'Hour_Tot','Avg_2-hr': 'Avg'})
-seq_2hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_2hr.csv')
-
-#hr-4
-seq_4hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_4-hr',x_column,
-                 '4-hr','Avg_4-hr']].rename(columns={'4-hr':'Seg_ID','HT_4-hr':'Hour_Tot','Avg_4-hr': 'Avg'})
-seq_4hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_4hr.csv')
-
-#hr-6
-seq_6hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_6-hr',x_column,
-                 '6-hr','Avg_6-hr']].rename(columns={'6-hr':'Seg_ID','HT_6-hr':'Hour_Tot','Avg_6-hr': 'Avg'})
-seq_6hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_6hr.csv')
-
-#hr-8
-seq_8hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_8-hr',x_column, 
-                 '8-hr','Avg_8-hr']].rename(columns={'8-hr':'Seg_ID','HT_8-hr':'Hour_Tot','Avg_8-hr': 'Avg'})
-seq_8hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_8hr.csv')
-
-#hr-12
-seq_12hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_12-hr',x_column,
-                  '12-hr','Avg_12-hr']].rename(columns={'12-hr':'Seg_ID','HT_12-hr':'Hour_Tot','Avg_12-hr': 'Avg'})
-seq_12hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_12hr.csv')
-
-#hr-120
-seq_120hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_120-hr',x_column, 
-                   '120-hr','Avg_120-hr']].rename(columns={'120-hr':'Seg_ID','HT_120-hr':'Hour_Tot','Avg_120-hr':'Avg'})
-seq_120hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_120hr.csv')
-
-#hr-8760
-seq_8760hr = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_8760-hr',x_column, 
-                    '8760-hr','Avg_8760-hr']].rename(columns={'8760-hr':'Seg_ID','HT_8760-hr':'Hour_Tot','Avg_8760-hr':'Avg'})
-seq_8760hr.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_seq_8760hr.csv')
-
-#print(seq_1hr.head())
-#print(seq_8760hr.head())
-
 print('completed current model approaches and sequential approaches')
-
-# In[ ]:
-
-
-
-
