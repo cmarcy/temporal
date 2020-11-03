@@ -2,7 +2,6 @@
 
 print('start initial data read')
 print()
-
 #importing packages needed for analysis
 import os
 import pandas as pd

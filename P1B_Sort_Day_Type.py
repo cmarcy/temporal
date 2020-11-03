@@ -6,7 +6,6 @@ print()
 import os
 import pandas as pd
 
-os.chdir('C:/Users/cmarcy/Desktop/py_projects/temporal/py/code_inputs')
 path = os.getcwd()
 parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs'
@@ -116,12 +115,12 @@ mydict['M12D2H06'] = ['Region', 'Month',     'Weekday', '4-hr']
 mydict['M12D1H06'] = ['Region', 'Month',                '4-hr']
 
 #bimonth
-mydict['M06D3H24'] = ['Region', 'Bimonth',   'Day_Type','Hour']
-mydict['M06D2H24'] = ['Region', 'Bimonth',   'Weekday', 'Hour']
-mydict['M06D1H24'] = ['Region', 'Bimonth',              'Hour']
-mydict['M06D3H06'] = ['Region', 'Bimonth',   'Day_Type','4-hr']
-mydict['M06D2H06'] = ['Region', 'Bimonth',   'Weekday', '4-hr']
-mydict['M06D1H06'] = ['Region', 'Bimonth',              '4-hr']
+mydict['M05D3H24'] = ['Region', 'Season_Grp','Day_Type','Hour']
+mydict['M05D2H24'] = ['Region', 'Season_Grp','Weekday', 'Hour']
+mydict['M05D1H24'] = ['Region', 'Season_Grp',           'Hour']
+mydict['M05D3H06'] = ['Region', 'Season_Grp','Day_Type','4-hr']
+mydict['M05D2H06'] = ['Region', 'Season_Grp','Weekday', '4-hr']
+mydict['M05D1H06'] = ['Region', 'Season_Grp',           '4-hr']
 
 #season
 mydict['M03D3H24'] = ['Region', 'Season',    'Day_Type','Hour']
@@ -136,7 +135,7 @@ mydict['WKS52H24'] = ['Region',              'Week',    'Hour']
 
 #Other examples that could be considered:
 #mydict['M01D3H24'] = ['Region',              'Day_Type','Hour']
-#mydict['M05D2H06'] = ['Region', 'Season_Grp','Weekday', '4-hr']
+#mydict['M05D2H06'] = ['Region', 'Bimonth',   'Weekday', '4-hr']
 
 # In[5]:
 

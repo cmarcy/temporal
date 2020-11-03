@@ -3,24 +3,17 @@
 
 print('start current model approaches and sequential approaches')
 print()
-
 #importing packages needed for analysis
 import os
 import pandas as pd
-#import numpy as np
 
 path = os.getcwd()
-#print(path)
+parent = os.path.dirname(path)
+outputs_dir = parent+'\outputs'
 
 load_dur = pd.read_csv('../outputs/load_long_format.csv')
 solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
 wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
-
-#this code creates an output directory in the parent director, if one does not exist yet
-#Note: this is where all of the output files will be written, since outputs are large this saves space in git
-path = os.getcwd()
-parent = os.path.dirname(path)
-outputs_dir = parent+'\outputs'
 
 # In[1]:
 
