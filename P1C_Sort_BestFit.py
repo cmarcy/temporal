@@ -57,8 +57,8 @@ def bestfit(seg_num):
         k_hr.append(kh)
         
         #uncomment out if&print statement below to see progress of this loop, one print per region
-        #if ID[-3:] == 'mer':
-        #    print(ID + ' kmeans done')   
+        if ID[-3:] == 'mer':
+            print(ID + ' kmeans done')   
     
     k_fit = pd.concat(k_fit)
     k_hr = pd.concat(k_hr)
@@ -109,7 +109,7 @@ def bestfit(seg_num):
 seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256]
 
 print('LOAD SETUP')
-x_name = 'load'
+x_name = 'Load'
 outputs_x = outputs_dir+'/'+x_name
 print('output files are written out in parent directory: '+outputs_x)
 print()
@@ -122,7 +122,7 @@ for i in seg_num_list:
 # In[4]:
 
 print('SOLAR SETUP')
-x_name = 'solar'
+x_name = 'Solar'
 outputs_x = outputs_dir+'/'+x_name
 print('output files are written out in parent directory: '+outputs_x)
 print()
@@ -135,7 +135,7 @@ for i in seg_num_list:
 # In[5]:
 
 print('WIND SETUP')
-x_name = 'wind'
+x_name = 'Wind'
 outputs_x = outputs_dir+'/'+x_name
 print('output files are written out in parent directory: '+outputs_x)
 print()
