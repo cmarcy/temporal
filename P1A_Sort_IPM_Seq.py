@@ -1,5 +1,4 @@
-#IPM Approach (2 profiles) 
-#Sequential Approach (Many profiles) 
+#IPM Approach (2 profiles) and Sequential Approach (Many profiles) 
 
 print('start current model approaches and sequential approaches')
 print()
