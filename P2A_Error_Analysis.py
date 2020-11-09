@@ -46,18 +46,20 @@ def error(x,x2):
     prof_RMSE = {}
     print('start of loop... wait for it...')
     for i in filelist:
-        y=len(x)+6
-        n=i[y:-4]
+        # n = name of the profile type
+        y=len(x)+6 # y = the position of "wind_8760_"
+        n=i[y:-4] # -4 = the position of ".csv"
         
         stat = pd.read_csv('../outputs/'+x+'/'+i)
         stat = stat[['Region','Season','Month','DOY','HOY','Hour_Tot',x2,'Avg']]
         stat['Diff'] = stat[x2] - stat['Avg'] 
         
-        #note: this is alt approach to above code, faster to solve, but need to update plots
-        diff = stat[['Region','HOY','Diff']].copy().rename(columns={'Diff':n})
-        diff['reg_hr'] = diff['Region'] + '-' + diff['HOY'].astype(str)
-        diff = diff.drop(columns={'Region','HOY'})
-        profile_diff = pd.merge(profile_diff, diff, on='reg_hr', how='left')
+        #rows are reg+HOY, columns are the differences calculated for each profile
+        #note: creates a very large file, commenting out here and at the end of the loop
+        #diff = stat[['Region','HOY','Diff']].copy().rename(columns={'Diff':n})
+        #diff['reg_hr'] = diff['Region'] + '-' + diff['HOY'].astype(str)
+        #diff = diff.drop(columns={'Region','HOY'})
+        #profile_diff = pd.merge(profile_diff, diff, on='reg_hr', how='left')
         
         # regional RMSE
         stat['Square'] = stat['Diff']**2
