@@ -57,8 +57,8 @@ def bestfit(seg_num):
         k_hr.append(kh)
         
         #uncomment out if&print statement below to see progress of this loop, one print per region
-        if ID[-3:] == 'mer':
-            print(ID + ' kmeans done')   
+        #if ID[-3:] == 'mer':
+        #    print(ID + ' kmeans done')   
     
     k_fit = pd.concat(k_fit)
     k_hr = pd.concat(k_hr)
