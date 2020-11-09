@@ -89,7 +89,7 @@ def cluster(seg_num):
     #wind
     khasw = khas2.rename(columns={'AvgW':'Avg'})
     khasw2 = pd.merge(wind_dur,khasw,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgS'])
-    khasw2.to_csv('../outputs/wind/wind_8760_clust_'+num+'segs.csv')
+    khasw2.to_csv('../outputs/wind/wind_8760_clust_'+num+'.csv')
     
     print('number of regions in load file:', khasl2.shape[0]/8760)
     print('number of regions in solar file:', khass2.shape[0]/8760)
