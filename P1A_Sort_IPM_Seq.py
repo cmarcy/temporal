@@ -146,7 +146,6 @@ def alt_ipm_approach(x):
     tod_x_2 = pd.merge(tod_x,STG_8760,on='STG_Counter',how='left')
     tod_x_2 = tod_x_2.drop(columns=['STG_Counter','Share','Sea_TOD','STG_Tot'])
     tod_x_2 = tod_x_2.sort_values(['Region','Season','TOD','Group'])
-    tod_x.to_csv('../outputs/'+x_name+'/'+x_name+'_seg_timeofday.csv')
         
     aggregations = {x_column:['count','mean']}
     case2 = tod_x_2.groupby(['Region','STG_ID'],as_index=False).agg(aggregations)
