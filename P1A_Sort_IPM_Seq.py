@@ -76,7 +76,7 @@ def ipm_approach(x):
     x4 = pd.merge(x3,norm,on=['Region','Season','Group','TOD'],how='left')
     x4 = x4.sort_values(['Region',x_column])
     print('number of rows in dataset for each region =',x4.shape[0]/len(unique_r))
-    x4.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_norm.csv')
+    x4.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_IPM_og.csv')
     print()
 
 # In[2]:
@@ -156,7 +156,7 @@ def alt_ipm_approach(x):
     tod_x_3 = pd.merge(tod_x_2,case2,on=['Region','STG_ID'],how='left')
     tod_x_3 = tod_x_3.sort_values(['Region',x_column])
     print('number of rows in dataset =',tod_x_3.shape[0]/len(unique_r))
-    tod_x_3.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_timeofday.csv')
+    tod_x_3.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_IPM_alt.csv')
     print()
 
 # In[3]:

@@ -96,7 +96,7 @@ def bestfit(seg_num):
     #wind
     khsw = khs2.rename(columns={'Wind':'Avg'})
     khsw2 = pd.merge(wind_dur,khsw,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Solar'])
-    khsw2.to_csv('../outputs/wind/wind_8760_k_seasons_'+x_name+'_'+num+'segs.csv')
+    khsw2.to_csv('../outputs/wind/wind_8760_best_'+x_name+'_'+num+'segs.csv')
     
     #print(khsw2.head())
     print('number of regions in load file:', khsl2.shape[0]/8760)
