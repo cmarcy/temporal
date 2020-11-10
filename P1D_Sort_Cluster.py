@@ -79,12 +79,12 @@ def cluster(seg_num):
     #load
     khasl = khas2.rename(columns={'AvgL':'Avg'})
     khasl2 = pd.merge(load_dur,khasl,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgW','AvgS'])
-    khasl2.to_csv('../outputs/load/load_8760_k_seasons_all_'+num+'segs.csv')
+    khasl2.to_csv('../outputs/load/load_8760_clust_'+num+'segs.csv')
     
     #solar
     khass = khas2.rename(columns={'AvgS':'Avg'})
     khass2 = pd.merge(solar_dur,khass,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgW'])
-    khass2.to_csv('../outputs/solar/solar_8760_k_seasons_all_'+num+'segs.csv')
+    khass2.to_csv('../outputs/solar/solar_8760_clust_'+num+'segs.csv')
     
     #wind
     khasw = khas2.rename(columns={'AvgW':'Avg'})
@@ -98,7 +98,7 @@ def cluster(seg_num):
     
 # In[3]:
 
-seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256]
+seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
 
 for i in seg_num_list:
     print(i*3,'number of segments')

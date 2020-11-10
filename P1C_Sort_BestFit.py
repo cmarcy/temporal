@@ -106,7 +106,7 @@ def bestfit(seg_num):
 
 # In[3]:
 
-seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256]
+seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
 
 print('LOAD SETUP')
 x_name = 'Load'
