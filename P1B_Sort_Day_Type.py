@@ -104,38 +104,38 @@ def aggregate(agg_name,agg_list):
 
 # In[4]:
 
-# TABLE HEADER:       Region    Month-Type   Day-Type   Hour-Type
+# TABLE HEADER:               Region    Month-Type   Day-Type   Hour-Type
 mydict = {} 
 #month
-mydict['D_M12D3H24'] = ['Region', 'Month',     'Day_Type','Hour']
-mydict['D_M12D2H24'] = ['Region', 'Month',     'Weekday', 'Hour']
-mydict['D_M12D1H24'] = ['Region', 'Month',                'Hour']
-mydict['D_M12D3H06'] = ['Region', 'Month',     'Day_Type','4-hr']
-mydict['D_M12D2H06'] = ['Region', 'Month',     'Weekday', '4-hr']
-mydict['D_M12D1H06'] = ['Region', 'Month',                '4-hr']
+mydict['DayType_M12D3H24'] = ['Region', 'Month',     'Day_Type','Hour']
+mydict['DayType_M12D2H24'] = ['Region', 'Month',     'Weekday', 'Hour']
+mydict['DayType_M12D1H24'] = ['Region', 'Month',                'Hour']
+mydict['DayType_M12D3H06'] = ['Region', 'Month',     'Day_Type','4-hr']
+mydict['DayType_M12D2H06'] = ['Region', 'Month',     'Weekday', '4-hr']
+mydict['DayType_M12D1H06'] = ['Region', 'Month',                '4-hr']
 
 #bimonth
-mydict['D_M05D3H24'] = ['Region', 'Season_Grp','Day_Type','Hour']
-mydict['D_M05D2H24'] = ['Region', 'Season_Grp','Weekday', 'Hour']
-mydict['D_M05D1H24'] = ['Region', 'Season_Grp',           'Hour']
-mydict['D_M05D3H06'] = ['Region', 'Season_Grp','Day_Type','4-hr']
-mydict['D_M05D2H06'] = ['Region', 'Season_Grp','Weekday', '4-hr']
-mydict['D_M05D1H06'] = ['Region', 'Season_Grp',           '4-hr']
+mydict['DayType_M05D3H24'] = ['Region', 'Season_Grp','Day_Type','Hour']
+mydict['DayType_M05D2H24'] = ['Region', 'Season_Grp','Weekday', 'Hour']
+mydict['DayType_M05D1H24'] = ['Region', 'Season_Grp',           'Hour']
+mydict['DayType_M05D3H06'] = ['Region', 'Season_Grp','Day_Type','4-hr']
+mydict['DayType_M05D2H06'] = ['Region', 'Season_Grp','Weekday', '4-hr']
+mydict['DayType_M05D1H06'] = ['Region', 'Season_Grp',           '4-hr']
 
 #season
-mydict['D_M03D3H24'] = ['Region', 'Season',    'Day_Type','Hour']
-mydict['D_M03D2H24'] = ['Region', 'Season',    'Weekday', 'Hour']
-mydict['D_M03D1H24'] = ['Region', 'Season',               'Hour']
-mydict['D_M03D3H06'] = ['Region', 'Season',    'Day_Type','4-hr']
-mydict['D_M03D2H06'] = ['Region', 'Season',    'Weekday', '4-hr']
-mydict['D_M03D1H06'] = ['Region', 'Season',               '4-hr']
+mydict['DayType_M03D3H24'] = ['Region', 'Season',    'Day_Type','Hour']
+mydict['DayType_M03D2H24'] = ['Region', 'Season',    'Weekday', 'Hour']
+mydict['DayType_M03D1H24'] = ['Region', 'Season',               'Hour']
+mydict['DayType_M03D3H06'] = ['Region', 'Season',    'Day_Type','4-hr']
+mydict['DayType_M03D2H06'] = ['Region', 'Season',    'Weekday', '4-hr']
+mydict['DayType_M03D1H06'] = ['Region', 'Season',               '4-hr']
 
 #week
-mydict['D_WKS52H24'] = ['Region',              'Week',    'Hour']
+mydict['DayType_WKS52H24'] = ['Region',              'Week',    'Hour']
 
 #Other examples that could be considered:
-#mydict['M01D3H24'] = ['Region',              'Day_Type','Hour']
-#mydict['M05D2H06'] = ['Region', 'Bimonth',   'Weekday', '4-hr']
+#mydict['DayType_M01D3H24'] = ['Region',              'Day_Type','Hour']
+#mydict['DayType_M05D2H06'] = ['Region', 'Bimonth',   'Weekday', '4-hr']
 
 # In[5]:
 
