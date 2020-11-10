@@ -13,43 +13,38 @@ if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
 print('output files are written out in parent directory: '+outputs_dir)
 
-# In[1]:
-
-##UNCOMMENT WHICH PROFILE BEING ANALYZED 
-x = 'load'
-x2 = 'Load'
-
-#x = 'solar'
-#x2 = 'TRG6'
-
-#x = 'wind'
-#x2 = 'TRG4'
 
 # In[1]:
 
-#Plot of Number of Segments vs Error
+def plot(x):
+    #Set up the data for plotting
+    
+    RMSE_prof = pd.read_csv('../outputs/error_analysis/'+x+'_profile_RMSE.csv')
+    RMSE_prof = RMSE_prof.rename(columns={'Unnamed: 0':'Profile'})
+    number_seg = pd.read_csv('inputs/number_segments.csv')
+    RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
+    RMSE_prof.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_segs.csv')
+    
+    RMSE_prof = RMSE_prof.drop(2).reset_index(drop=True)
+    group = RMSE_prof['Profile'].str.split("_", n = 1, expand = True) 
+    RMSE_prof['Group'] = group[0]
+    RMSE_prof['Group'] = pd.Categorical(RMSE_prof['Group'])
+    RMSE_prof['Color'] = RMSE_prof['Group'].cat.codes
+    #unique_g = pd.Series(RMSE_prof['Group'].unique()).dropna()
+    
+    #Plot of Number of Segments vs Error
+    
+    #plt.legend(loc='upper right')
+    plt.grid()
+    plt.title('Error and time segment comparison')
+    plt.xlabel('Time Segments')
+    plt.ylabel('Error')
+    
+    plt.scatter(x=RMSE_prof['Segments'], y=RMSE_prof['RMSE'], c=RMSE_prof['Color'])
+    plt.savefig('../outputs/plots/segments_'+x+'.png', bbox_inches='tight')
 
-RMSE_prof = pd.read_csv('../outputs/error_analysis/'+x+'_profile_RMSE.csv')
-RMSE_prof = RMSE_prof.rename(columns={'Unnamed: 0':'Profile'})
-number_seg = pd.read_csv('inputs/number_segments.csv')
-RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
-RMSE_prof.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_segs.csv')
-
-RMSE_prof = RMSE_prof.drop(2).reset_index(drop=True)
-
-plt.clf()
-fig, axis = plt.subplots()
-
-axis.yaxis.grid(True)
-axis.set_title('Error and time segment comparison')
-axis.set_xlabel('Time Segments')
-axis.set_ylabel('Error')
-
-X = RMSE_prof['Segments']
-Y = RMSE_prof['RMSE']
-
-axis.scatter(X, Y)
-
-fig.savefig('../outputs/plots/segments_'+x+'.png', bbox_inches='tight')
+plot('load')
+plot('wind')
+plot('solar')
 
 print('end of plots')
