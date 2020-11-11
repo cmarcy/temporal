@@ -19,13 +19,13 @@ lwsset = pd.read_csv('../outputs/8760_combo.csv')
 
 #Creates the Region + Season, (63*3=189 unique IDs)
 lws = lwsset[['R_Subgroup','Season','HOY','Load','Wind','Solar']].copy()
-lws['ID'] = lws['R_Subgroup']+'_'+lws['Season']
+lws['ID'] = lws['R_Subgroup']#+'_'+lws['Season']
 unique_ID = pd.Series(lws['ID'].unique()).dropna()
 ID_count = unique_ID.shape[0]
 reg_count = len(pd.Series(lwsset['R_Subgroup'].unique()).dropna())
-print('number of regions (check):',ID_count/3,'=',reg_count)
-print('number of regions X seasons:',ID_count)
-print()
+#print('number of regions (check):',ID_count/3,'=',reg_count)
+#print('number of regions X seasons:',ID_count)
+#print()
 
 # In[2]:
 
@@ -98,7 +98,9 @@ def cluster(seg_num):
     
 # In[3]:
 
-seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
+seg_num_list = [8, 12, 24, 60, 146, 365, 730, 1095, 2190]
+#This list below is for seasonal analysis
+#seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
 
 for i in seg_num_list:
     print(i*3,'number of segments')
