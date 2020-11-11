@@ -6,4 +6,5 @@ import P1B_Sort_Day_Type
 import P1C_Sort_BestFit
 import P1D_Sort_Cluster
 import P2A_Error_Analysis
-import P2B_Plots.py
+import P2B_Plots
+import P3_Critical_Hours
