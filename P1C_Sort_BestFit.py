@@ -90,16 +90,19 @@ def bestfit(seg_num):
     khsl2.to_csv('../outputs/load/load_8760_B'+x_name+'_'+num+'.csv')
     
     #solar
-    khss = khs2.rename(columns={'Solar':'Avg'})
-    khss2 = pd.merge(solar_dur,khss,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Wind'])
-    khss2.to_csv('../outputs/solar/solar_8760_B'+x_name+'_'+num+'.csv')
+    khss2 = pd.merge(solar_dur,khs2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Wind'])
+    khss3 = khss2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khss3.columns = ['Region','Label','Avg']
+    khss = pd.merge(khss2,khss3,on=['Region'],how='left')
+    khss.to_csv('../outputs/solar/solar_8760_B'+x_name+'_'+num+'.csv')
     
     #wind
-    khsw = khs2.rename(columns={'Wind':'Avg'})
-    khsw2 = pd.merge(wind_dur,khsw,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Solar'])
-    khsw2.to_csv('../outputs/wind/wind_8760_B'+x_name+'_'+num+'.csv')
+    khsw2 = pd.merge(wind_dur,khs2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Solar'])
+    khsw3 = khsw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khsw3.columns = ['Region','Label','Avg']
+    khsw = pd.merge(khsw2,khsw3,on=['Region'],how='left')
+    khsw.to_csv('../outputs/wind/wind_8760_B'+x_name+'_'+num+'.csv')
     
-    #print(khsw2.head())
     print('number of regions in load file:', khsl2.shape[0]/8760)
     print('number of regions in solar file:', khss2.shape[0]/8760)
     print('number of regions in wind file:', khsw2.shape[0]/8760)

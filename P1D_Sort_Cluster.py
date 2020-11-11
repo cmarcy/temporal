@@ -74,22 +74,26 @@ def cluster(seg_num):
     kfas2 = pd.merge(kfas,width,on=['ID','Label'],how='left')
     khas2 = pd.merge(khas,kfas2,on=['ID','Label'],how='left').drop(columns=['ID','Load','Wind','Solar'])
     
-    #merge the fit the final datasets, note that we're matching fit R_subgroup (IPM) to the Region (IPM+State)
-    num = str(seg_num*3)
+    #merge the fit the final datasets
+    num = str(seg_num)#*3)
     #load
     khasl = khas2.rename(columns={'AvgL':'Avg'})
     khasl2 = pd.merge(load_dur,khasl,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgW','AvgS'])
-    khasl2.to_csv('../outputs/load/load_8760_clust_'+num+'.csv')
+    khasl2.to_csv('../outputs/load/load_8760_Cluster_'+num+'.csv')
     
-    #solar
-    khass = khas2.rename(columns={'AvgS':'Avg'})
-    khass2 = pd.merge(solar_dur,khass,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgW'])
-    khass2.to_csv('../outputs/solar/solar_8760_clust_'+num+'.csv')
+    #solar - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
+    khass2 = pd.merge(solar_dur,khas2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgW'])
+    khass3 = khass2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khass3.columns = ['Region','Label','Avg']
+    khass = pd.merge(khass2,khass3,on=['Region'],how='left')
+    khass.to_csv('../outputs/solar/solar_8760_Cluster_'+num+'.csv')
     
-    #wind
-    khasw = khas2.rename(columns={'AvgW':'Avg'})
-    khasw2 = pd.merge(wind_dur,khasw,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgS'])
-    khasw2.to_csv('../outputs/wind/wind_8760_Cluster_'+num+'.csv')
+    #wind - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
+    khasw2 = pd.merge(wind_dur,khas2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgS'])
+    khasw3 = khasw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khasw3.columns = ['Region','Label','Avg']
+    khasw = pd.merge(khasw2,khasw3,on=['Region'],how='left')
+    khasw.to_csv('../outputs/wind/wind_8760_Cluster_'+num+'.csv')
     
     print('number of regions in load file:', khasl2.shape[0]/8760)
     print('number of regions in solar file:', khass2.shape[0]/8760)
@@ -103,7 +107,7 @@ seg_num_list = [8, 12, 24, 60, 146, 365, 730, 1095, 2190]
 #seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
 
 for i in seg_num_list:
-    print(i*3,'number of segments')
+    print(i,'number of segments')
     print()
     cluster(i)
 
