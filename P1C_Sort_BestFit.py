@@ -87,12 +87,12 @@ def bestfit(seg_num):
     #load
     khsl = khs2.rename(columns={'Load':'Avg'})
     khsl2 = pd.merge(load_dur,khsl,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Wind','Solar'])
-    khsl2.to_csv('../outputs/load/load_8760_B'+x_name+'_'+num+'segs.csv')
+    khsl2.to_csv('../outputs/load/load_8760_B'+x_name+'_'+num+'.csv')
     
     #solar
     khss = khs2.rename(columns={'Solar':'Avg'})
     khss2 = pd.merge(solar_dur,khss,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Wind'])
-    khss2.to_csv('../outputs/solar/solar_8760_B'+x_name+'_'+num+'segs.csv')
+    khss2.to_csv('../outputs/solar/solar_8760_B'+x_name+'_'+num+'.csv')
     
     #wind
     khsw = khs2.rename(columns={'Wind':'Avg'})

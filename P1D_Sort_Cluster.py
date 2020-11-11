@@ -79,12 +79,12 @@ def cluster(seg_num):
     #load
     khasl = khas2.rename(columns={'AvgL':'Avg'})
     khasl2 = pd.merge(load_dur,khasl,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgW','AvgS'])
-    khasl2.to_csv('../outputs/load/load_8760_clust_'+num+'segs.csv')
+    khasl2.to_csv('../outputs/load/load_8760_clust_'+num+'.csv')
     
     #solar
     khass = khas2.rename(columns={'AvgS':'Avg'})
     khass2 = pd.merge(solar_dur,khass,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgW'])
-    khass2.to_csv('../outputs/solar/solar_8760_clust_'+num+'segs.csv')
+    khass2.to_csv('../outputs/solar/solar_8760_clust_'+num+'.csv')
     
     #wind
     khasw = khas2.rename(columns={'AvgW':'Avg'})
