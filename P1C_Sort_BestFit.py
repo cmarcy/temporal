@@ -121,7 +121,7 @@ print('output files are written out in parent directory: '+outputs_x)
 print()
 
 for i in seg_num_list:
-    print(i*3,'number of segments')
+    print(i,'number of segments')
     print()
     bestfit(i)
 
@@ -134,7 +134,7 @@ print('output files are written out in parent directory: '+outputs_x)
 print()
 
 for i in seg_num_list:
-    print(i*3,'number of segments')
+    print(i,'number of segments')
     print()
     bestfit(i)
 
@@ -147,7 +147,7 @@ print('output files are written out in parent directory: '+outputs_x)
 print()
 
 for i in seg_num_list:
-    print(i*3,'number of segments')
+    print(i,'number of segments')
     print()
     bestfit(i)
 
