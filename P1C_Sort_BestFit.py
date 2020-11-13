@@ -111,7 +111,7 @@ def bestfit(seg_num):
 # In[3]:
 
 seg_num_list = [6,10,15,24,40,73,146,292,438,730,1095,1752,2920,4380]
-#TESTING: use line below instead for testing
+#TESTING: use line below for testing, comment out for complete solve
 seg_num_list = [6,10]
 
 x_name = 'Load'

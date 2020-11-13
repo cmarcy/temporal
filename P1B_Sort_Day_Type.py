@@ -150,7 +150,8 @@ reg_count = unique_r.shape[0]
 
 #for key in mydict:
 #    aggregate(key,mydict[key])
-#TESTING: use line below instead for testing
+#TESTING: use line below for testing, 
+#uncomment the two lines above and comment line below for complete solve
 aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
 # In[6]:
