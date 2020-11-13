@@ -18,7 +18,6 @@ if not os.path.exists(outputs_dir):
 def plot(x):
     #Set up the data for plotting
     print(x)
-    print()
     #importing datasets
     RMSE_prof = pd.read_csv('../outputs/error_analysis/'+x+'_profile_RMSE.csv')
     RMSE_prof = RMSE_prof.rename(columns={'Unnamed: 0':'Profile'})

@@ -1,5 +1,5 @@
 #Error Analysis on 8760 profiles 
-print('start error analysis')
+print('start crtical hour error analysis')
 print()
 #importing packages needed for analysis
 import os
@@ -142,6 +142,7 @@ def error(x,x2):
     #print(lws_t)
     
     #loop reads through each profile dataset and finds diff value for each hourset
+    print('start of first loop... wait for it...')
     for i in filelist:
         y=len(x)+6
         n=i[y:-4]
@@ -161,12 +162,15 @@ def error(x,x2):
             diff.loc[diff[col] == True, n+'-'+m] = diff[x2] - diff['Avg']
         diff=diff.drop(columns=['Avg'])
     #diff.to_csv('../outputs/crit_hr/'+x+'diff.csv')
+    print('end of loop')
+    print()
     
     #loop calculates RMSE for each profile + critical hour set
     prof_RMSE = {}
     stat = diff.copy()
     #print(stat.columns)
     #print()
+    print('start of second loop... wait for it...')
     for i in stat.columns[18:]:
         #print(i)
         
@@ -177,6 +181,7 @@ def error(x,x2):
         stat2[i] = stat2**(1/2)
         stat2[i] = stat2[i].values
         prof_RMSE.update({i : (stat2[i])})
+    print('end of loop')
     
     #puts the RMSE data for each profile+critical hour set into a DF and exports it
     profile_df = pd.DataFrame.from_dict(prof_RMSE,orient='index').rename(columns={0:'RMSE'})
@@ -184,13 +189,13 @@ def error(x,x2):
     profile_df['Profile']=profile_df['ID'].str.split('-',1,expand=True)[0]
     profile_df['Crit_Hr']=profile_df['ID'].str.split('-',1,expand=True)[1]
     profile_df=profile_df.drop(columns={'ID'})
-    profile_df.to_csv('../outputs/error_analysis/'+x+'_'+'profile_RMSE_2.csv')
+    #profile_df.to_csv('../outputs/error_analysis/'+x+'_'+'profile_RMSE_2.csv')
     
     #Add Segments to dataset
     number_seg = pd.read_csv('../outputs/error_analysis/number_segments.csv')
     number_seg = number_seg.drop(columns=['Unnamed: 0'])
     profile_df2 = pd.merge(profile_df, number_seg, on='Profile', how='left')
-    profile_df2.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_2_segs.csv')
+    profile_df2.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_sets.csv')
     #print(profile_df2.head(8))
     print()
     
@@ -200,5 +205,5 @@ def error(x,x2):
 error('load','Load')
 error('solar','TRG_Avg')
 error('wind','TRG_Avg')
-print('finished error analysis')
+print('finished crtical hour error analysis')
 print()
