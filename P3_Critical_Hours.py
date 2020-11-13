@@ -187,7 +187,7 @@ def error(x,x2):
     profile_df.to_csv('../outputs/error_analysis/'+x+'_'+'profile_RMSE_2.csv')
     
     #Add Segments to dataset
-    number_seg = pd.read_csv('inputs/number_segments.csv')
+    number_seg = pd.read_csv('../outputs/error_analysis/number_segments.csv')
     profile_df2 = pd.merge(profile_df, number_seg, on='Profile', how='left')
     profile_df2.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_2_segs.csv')
     #print(profile_df2.head(8))

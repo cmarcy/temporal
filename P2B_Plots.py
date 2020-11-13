@@ -22,16 +22,16 @@ def plot(x):
     #importing datasets
     RMSE_prof = pd.read_csv('../outputs/error_analysis/'+x+'_profile_RMSE.csv')
     RMSE_prof = RMSE_prof.rename(columns={'Unnamed: 0':'Profile'})
-    number_seg = pd.read_csv('inputs/number_segments.csv')
+    number_seg = pd.read_csv('../outputs/error_analysis/number_segments.csv')
     RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
     
     #creating categories for plotting the data
     RMSE_prof = RMSE_prof.drop(2).reset_index(drop=True)
-    group = RMSE_prof['Profile'].str.split("_", n = 1, expand = True) 
-    RMSE_prof['Group'] = group[0]
+    #group = RMSE_prof['Profile'].str.split("_", n = 1, expand = True) 
+    #RMSE_prof['Group'] = group[0]
     
     #creating min and max points for certain categories of data
-    Gframe = pd.DataFrame(['BLoad','BSolar','BWind','Cluster']).rename(columns={0:'Group'})
+    Gframe = pd.DataFrame(['Sequent,BLoad','BSolar','BWind','Cluster']).rename(columns={0:'Group'})
 
     minerror = Gframe.copy()
     minerror['Profile'] = minerror['Group']+'_min'
