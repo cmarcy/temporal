@@ -37,12 +37,11 @@ def plot(x):
     minerror['Profile'] = minerror['Group']+'_min'
     minerror['Segments'] = 8760
     minerror['RMSE'] = 0
-    seq_8760_err = RMSE_prof[RMSE_prof['Profile']=='seq_8760-hr']
 
     maxerror = Gframe.copy()
     maxerror['Profile'] = minerror['Group']+'_max'
     maxerror['Segments'] = 1
-    maxerror['RMSE'] = seq_8760_err['RMSE'].max()
+    maxerror['RMSE'] = RMSE_prof['RMSE'].max()
     RMSE_prof = pd.concat([RMSE_prof,minerror, maxerror], sort=False)
     
     #assigns a number for the categories, needed for plotting in different colors

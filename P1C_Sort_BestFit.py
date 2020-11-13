@@ -83,7 +83,7 @@ def bestfit(seg_num):
     khs2 = pd.merge(khs[['R_Subgroup','Season','Label','HOY']],width,on=['R_Subgroup','Season','Label'],how='left')
     
     #merge the fit the final datasets, note that we're matching fit R_subgroup (IPM) to the Region (IPM+State)
-    num = str(seg_num*3)
+    num = str(seg_num)
     #load
     khsl = khs2.rename(columns={'Load':'Avg'})
     khsl2 = pd.merge(load_dur,khsl,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Wind','Solar'])
