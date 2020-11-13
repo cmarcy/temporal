@@ -196,7 +196,7 @@ def seq_approach(x):
     hr_list = seq_intervals.columns[1:]
     
     #TESTING: use line below instead for testing
-    hr_list = seq_intervals.columns[1:3]
+    hr_list = seq_intervals.columns[1:2].append(seq_intervals.columns[-1:])
     print(hr_list)
     print()
     

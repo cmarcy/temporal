@@ -31,7 +31,7 @@ def plot(x):
     #RMSE_prof['Group'] = group[0]
     
     #creating min and max points for certain categories of data
-    Gframe = pd.DataFrame(['Sequent,BLoad','BSolar','BWind','Cluster']).rename(columns={0:'Group'})
+    Gframe = pd.DataFrame(['Sequent','BLoad','BSolar','BWind','Cluster']).rename(columns={0:'Group'})
 
     minerror = Gframe.copy()
     minerror['Profile'] = minerror['Group']+'_min'
