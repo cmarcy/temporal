@@ -194,6 +194,9 @@ def seq_approach(x):
     #print(seq_x.head(9))
     
     hr_list = seq_intervals.columns[1:]
+    
+    #TESTING: use line below instead for testing
+    hr_list = seq_intervals.columns[1:3]
     print(hr_list)
     print()
     

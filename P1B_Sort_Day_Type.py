@@ -146,10 +146,44 @@ x = setup(load_dur)
 unique_r = pd.Series(x['Region'].unique()).dropna()
 reg_count = unique_r.shape[0]
 
-for key in mydict:
-    aggregate(key,mydict[key])
+#for key in mydict:
+#    aggregate(key,mydict[key])
+#TESTING: use line below instead for testing
+aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
 print('finished day-type approaches')
 print()
 
 # In[6]:
+
+print('WIND SETUP')
+x_name = 'wind'
+x_column = 'TRG_Avg'
+x = setup(wind_dur)
+unique_r = pd.Series(x['Region'].unique()).dropna()
+reg_count = unique_r.shape[0]
+
+#for key in mydict:
+#    aggregate(key,mydict[key])
+#TESTING: use line below instead for testing
+aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
+
+print('finished day-type approaches')
+print()
+
+# In[7]:
+
+print('SOLAR SETUP')
+x_name = 'solar'
+x_column = 'TRG_Avg'
+x = setup(solar_dur)
+unique_r = pd.Series(x['Region'].unique()).dropna()
+reg_count = unique_r.shape[0]
+
+#for key in mydict:
+#    aggregate(key,mydict[key])
+#TESTING: use line below instead for testing
+aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
+
+print('finished day-type approaches')
+print()
