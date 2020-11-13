@@ -1,6 +1,6 @@
-#Day-Type Approach (18ish profiles)
+#Sequential: Splits into different hour intervals (e.g. 1, 2, 4, 8, 12, ..., 8760)
 
-print('start day-type approaches')
+print('start sequential approach')
 print()
 #importing packages needed for analysis
 import os
@@ -16,6 +16,68 @@ wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
 
 # In[1]:
 
+def seq_approach(x):
+#Details: Split into different hour intervals (e.g. 1, 2, 4, 8, 12, ..., 8760)
+    print(x_name)
+    print()
+    
+    unique_r = pd.Series(x['Region'].unique()).dropna()
+    x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act',x_column]]
+    print('Number of regions in initial dataset',len(unique_r))
+    
+    #the interval DF defines groups across all 8760 HOY for each interval type
+    seq_intervals = pd.read_csv('inputs/sequential_hours.csv')
+    seq_x = pd.merge(x, seq_intervals, on='HOY', how='left')
+    #print(seq_x.head(9))
+    
+    hr_list = seq_intervals.columns[1:]
+    
+    #TESTING: use line below for testing, comment out for complete solve
+    hr_list = seq_intervals.columns[1:2].append(seq_intervals.columns[-1:])
+    print(hr_list)
+    print()
+    
+    for i in hr_list:
+        print(i)
+        #average load based on order of groups
+        aggregations = {x_column:['count','mean']}
+        case = seq_x.groupby(['Region',i],as_index=False).agg(aggregations)
+        case.columns = ['Region',i,'HT_'+i,'Avg_'+i]
+        #print(case.head())
+        print('number of segments for each region =',case.shape[0]/len(unique_r))
+        
+        seq_x = pd.merge(seq_x,case,on=['Region',i],how='left')
+        seq_x = seq_x.sort_values(['Region','HOY']).reset_index(drop=True)
+        print('number of hours for each region =',seq_x.shape[0]/len(unique_r))
+        print()
+    
+        seq_x2 = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_'+i,x_column, 
+                     i,'Avg_'+i]].rename(columns={i:'Seg_ID','HT_'+i:'Hour_Tot','Avg_'+i: 'Avg'})
+        seq_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_Sequent_'+i+'.csv')
+
+# In[2]:
+
+x_name = 'load'
+x_column = 'Load'
+seq_approach(load_dur)
+
+x_name = 'solar'
+x_column = 'TRG_Avg'
+seq_approach(solar_dur)
+
+x_name = 'wind'
+x_column = 'TRG_Avg'
+seq_approach(wind_dur)
+
+print('completed Sequential Approach')
+print()
+
+# In[1]:
+
+#Day-Type Approach (18ish profiles)
+
+print('start day-type approaches')
+print()
 #Find Peak Load Days in Each Month
 
 #groupby region, month, and day to sum the total day
@@ -150,6 +212,7 @@ reg_count = unique_r.shape[0]
 
 #for key in mydict:
 #    aggregate(key,mydict[key])
+
 #TESTING: use line below for testing, 
 #uncomment the two lines above and comment line below for complete solve
 aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
