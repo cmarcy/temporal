@@ -29,7 +29,23 @@ Below is a short description of each .py file and a list of the input/output fil
  - P0_Initial_Data_Read.py:wind_dur2.to_csv('../outputs/wind_long_format.csv')
  - P0_Initial_Data_Read.py:lwsset.to_csv('../outputs/8760_combo.csv')
 
-#### P1A_Sort_IPM_Seq.py - creates the profiles for the IPM approach 
+#### P1A_Sort_Seq_DayType.py - creates the profiles for the sequential approach and the day-type approach
+
+*Input files:*
+ - P1B_Sort_Day_Type.py:wind_dur = pd.read_csv('../outputs/load_long_format.csv')
+ - P1B_Sort_Day_Type.py:wind_dur = pd.read_csv('../outputs/solar_long_format.csv')
+ - P1B_Sort_Day_Type.py:wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
+ - P1A_Sort_IPM_Seq.py:seq_intervals = pd.read_csv('inputs/sequential_hours.csv')
+ - P1B_Sort_Day_Type.py:daydata = pd.read_csv('inputs/days_365.csv')
+ - P1B_Sort_Day_Type.py:monthly = pd.read_csv('inputs/season_bimonthly.csv')
+ - P1B_Sort_Day_Type.py:weekday = pd.read_csv('inputs/weekday.csv')
+ - P1B_Sort_Day_Type.py:interval_4hr = pd.read_csv('inputs/interval_4hr.csv')
+
+*Output files:*
+ - P1A_Sort_IPM_Seq.py:seq_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_Sequent_'+i+'.csv')
+ - P1B_Sort_Day_Type.py:case_x.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_'+agg_name+'.csv')
+
+#### P1B_Sort_IPM.py - creates the profiles for the IPM approach 
 
 *Input files:*
  - P1A_Sort_IPM_Seq.py:load_dur = pd.read_csv('../outputs/load_long_format.csv')
@@ -43,22 +59,6 @@ Below is a short description of each .py file and a list of the input/output fil
 *Output files:*
  - P1A_Sort_IPM_Seq.py:x4.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_IPM.csv')
  - P1A_Sort_IPM_Seq.py:tod_x_3.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_IPMalt.csv')
-
-#### P1B_Sort_Day_Type.py - creates the profiles for the sequential approach and the day-type approach
-
-*Input files:*
- - P1B_Sort_Day_Type.py:load_dur = pd.read_csv('../outputs/load_long_format.csv')
- - P1B_Sort_Day_Type.py:solar_dur = pd.read_csv('../outputs/solar_long_format.csv')
- - P1B_Sort_Day_Type.py:wind_dur = pd.read_csv('../outputs/wind_long_format.csv')
- - P1A_Sort_IPM_Seq.py:seq_intervals = pd.read_csv('inputs/sequential_hours.csv')
- - P1B_Sort_Day_Type.py:daydata = pd.read_csv('inputs/days_365.csv')
- - P1B_Sort_Day_Type.py:monthly = pd.read_csv('inputs/season_bimonthly.csv')
- - P1B_Sort_Day_Type.py:weekday = pd.read_csv('inputs/weekday.csv')
- - P1B_Sort_Day_Type.py:interval_4hr = pd.read_csv('inputs/interval_4hr.csv')
-
-*Output files:*
- - P1A_Sort_IPM_Seq.py:seq_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_Sequent_'+i+'.csv')
- - P1B_Sort_Day_Type.py:case_x.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_'+agg_name+'.csv')
 
 #### P1C_Sort_BestFit.py - creates the profiles for the best-fit approach
 
