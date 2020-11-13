@@ -112,3 +112,4 @@ for i in seg_num_list:
     cluster(i)
 
 print('completed clustering approach')
+print()

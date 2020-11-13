@@ -152,3 +152,4 @@ for i in seg_num_list:
     bestfit(i)
 
 print('completed best fit approaches')
+print()

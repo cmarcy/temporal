@@ -238,3 +238,4 @@ x_column = 'TRG_Avg'
 seq_approach(wind_dur)
 
 print('completed current model approaches and sequential approaches')
+print()

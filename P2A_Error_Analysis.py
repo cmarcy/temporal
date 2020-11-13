@@ -135,3 +135,4 @@ error('solar','TRG_Avg')
 error('wind','TRG_Avg')
 
 print('end of error analysis')
+print()

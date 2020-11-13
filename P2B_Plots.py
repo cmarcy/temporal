@@ -79,4 +79,4 @@ plot('wind')
 plot('solar')
 
 print('end of plots')
-
+print()
