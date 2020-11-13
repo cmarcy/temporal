@@ -11,18 +11,19 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs\plots'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
-print('output files are written out in parent directory: '+outputs_dir)
-
+#print('output files are written out in parent directory: '+outputs_dir)
 
 # In[1]:
 
 def plot(x):
     #Set up the data for plotting
     print(x)
+    print()
     #importing datasets
     RMSE_prof = pd.read_csv('../outputs/error_analysis/'+x+'_profile_RMSE.csv')
     RMSE_prof = RMSE_prof.rename(columns={'Unnamed: 0':'Profile'})
     number_seg = pd.read_csv('../outputs/error_analysis/number_segments.csv')
+    number_seg = number_seg.drop(columns=['Unnamed: 0'])
     RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
     
     #creating categories for plotting the data
@@ -75,8 +76,8 @@ def plot(x):
     plt.savefig('../outputs/plots/segments_'+x+'.png', bbox_inches='tight')
 
 plot('load')
-plot('wind')
 plot('solar')
+plot('wind')
 
 print('end of plots')
 print()

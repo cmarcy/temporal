@@ -10,7 +10,7 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs\error_analysis'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
-print('output files are written out in parent directory: '+outputs_dir)
+#print('output files are written out in parent directory: '+outputs_dir)
 
 # In[1]:
 
@@ -19,7 +19,7 @@ def error(x,x2):
     if not os.path.exists(outputs_dir_x):
         os.makedirs(outputs_dir_x)
     
-    print(x, 'setup')
+    print(x)
     print()
     
     # DF to use for regional error analysis, like RMSE and number of representative hours 
@@ -93,6 +93,8 @@ def error(x,x2):
 # In[2]:
 
 def segs(x):
+    print('create segment count')
+    print()
     from pandas import DataFrame
     profilelist = []
     files = os.listdir(parent+'/outputs/'+x)

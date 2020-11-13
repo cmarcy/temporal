@@ -11,7 +11,7 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs\error_analysis'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
-print('output files are written out in parent directory: '+outputs_dir)
+#print('output files are written out in parent directory: '+outputs_dir)
 
 # In[1]:
 
@@ -91,7 +91,7 @@ crit_hr.to_csv('../outputs/critical_hours.csv')
 #note: commented out reviewing the 6 corners individually for now (see below)
 lws_t = lws_10_t #+ lws_6c_t
 lws_t.append('corners_t')
-lws_t.append('ALL_t')
+#lws_t.append('ALL_t')
 print(lws_t)
 print()
 
@@ -102,7 +102,7 @@ def error(x,x2):
     if not os.path.exists(outputs_dir_x):
         os.makedirs(outputs_dir_x)
     
-    print(x, 'setup')
+    print(x)
     print()
     
     # DF to use for regional error analysis, like RMSE and number of representative hours 
@@ -188,6 +188,7 @@ def error(x,x2):
     
     #Add Segments to dataset
     number_seg = pd.read_csv('../outputs/error_analysis/number_segments.csv')
+    number_seg = number_seg.drop(columns=['Unnamed: 0'])
     profile_df2 = pd.merge(profile_df, number_seg, on='Profile', how='left')
     profile_df2.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_2_segs.csv')
     #print(profile_df2.head(8))

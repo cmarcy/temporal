@@ -114,11 +114,10 @@ seg_num_list = [6,10,15,24,40,73,146,292,438,730,1095,1752,2920,4380]
 #TESTING: use line below instead for testing
 seg_num_list = [6,10]
 
-print('LOAD SETUP')
 x_name = 'Load'
-outputs_x = outputs_dir+'/'+x_name
-print('output files are written out in parent directory: '+outputs_x)
+print(x_name)
 print()
+outputs_x = outputs_dir+'/'+x_name
 
 for i in seg_num_list:
     print(i,'number of segments')
@@ -127,11 +126,10 @@ for i in seg_num_list:
 
 # In[4]:
 
-print('SOLAR SETUP')
 x_name = 'Solar'
-outputs_x = outputs_dir+'/'+x_name
-print('output files are written out in parent directory: '+outputs_x)
+print(x_name)
 print()
+outputs_x = outputs_dir+'/'+x_name
 
 for i in seg_num_list:
     print(i,'number of segments')
@@ -140,11 +138,10 @@ for i in seg_num_list:
 
 # In[5]:
 
-print('WIND SETUP')
 x_name = 'Wind'
-outputs_x = outputs_dir+'/'+x_name
-print('output files are written out in parent directory: '+outputs_x)
+print(x_name)
 print()
+outputs_x = outputs_dir+'/'+x_name
 
 for i in seg_num_list:
     print(i,'number of segments')

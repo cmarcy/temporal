@@ -39,8 +39,8 @@ def setup(x):
     outputs_x = outputs_dir+'/'+x_name
     if not os.path.exists(outputs_x):
         os.makedirs(outputs_x)
-    print('output files are written out in parent directory: '+outputs_x)
-    print()
+    #print('output files are written out in parent directory: '+outputs_x)
+    #print()
 
     x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act',x_column]]
     unique_r = pd.Series(x['Region'].unique()).dropna()
@@ -139,9 +139,11 @@ mydict['DayType_WKS52H24'] = ['Region',              'Week',    'Hour']
 
 # In[5]:
 
-print('LOAD SETUP')
 x_name = 'load'
 x_column = 'Load'
+print(x_name)
+print()
+
 x = setup(load_dur)
 unique_r = pd.Series(x['Region'].unique()).dropna()
 reg_count = unique_r.shape[0]
@@ -151,15 +153,14 @@ reg_count = unique_r.shape[0]
 #TESTING: use line below instead for testing
 aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
-print('finished day-type approaches')
-print()
-
 # In[6]:
 
-print('WIND SETUP')
-x_name = 'wind'
+x_name = 'solar'
 x_column = 'TRG_Avg'
-x = setup(wind_dur)
+print(x_name)
+print()
+
+x = setup(solar_dur)
 unique_r = pd.Series(x['Region'].unique()).dropna()
 reg_count = unique_r.shape[0]
 
@@ -168,15 +169,14 @@ reg_count = unique_r.shape[0]
 #TESTING: use line below instead for testing
 aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
-print('finished day-type approaches')
-print()
-
 # In[7]:
 
-print('SOLAR SETUP')
-x_name = 'solar'
+x_name = 'wind'
 x_column = 'TRG_Avg'
-x = setup(solar_dur)
+print(x_name)
+print()
+
+x = setup(wind_dur)
 unique_r = pd.Series(x['Region'].unique()).dropna()
 reg_count = unique_r.shape[0]
 

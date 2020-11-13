@@ -24,8 +24,8 @@ def ipm_approach(x):
     outputs_x = outputs_dir+'/'+x_name
     if not os.path.exists(outputs_x):
         os.makedirs(outputs_x)
-    print('output files are written out in parent directory: '+outputs_x)
-    print()
+    #print('output files are written out in parent directory: '+outputs_x)
+    #print()
     
     unique_r = pd.Series(x['Region'].unique()).dropna()
     x = x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act',x_column]]
