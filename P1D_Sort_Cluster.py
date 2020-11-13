@@ -102,7 +102,7 @@ def cluster(seg_num):
     
 # In[3]:
 
-seg_num_list = [8, 12, 24, 60, 146, 365, 730, 1095, 2190]
+seg_num_list = [6,10,15,24,40,73,146,292,438,730,1095,1752,2920,4380]
 #This list below is for seasonal analysis
 #seg_num_list = [4, 6, 8, 20, 16, 24, 32, 64, 128, 256, 512, 1024, 2048]
 
