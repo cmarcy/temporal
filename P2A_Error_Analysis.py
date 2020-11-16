@@ -80,7 +80,7 @@ def error(x,x2):
         stat2[n] = stat2[n].values
         prof_RMSE.update({n : (stat2[n])})
         
-        print(x, n, 'error calculated')
+        #print(x, n, 'error calculated')
     
     print('end of loop')
     print()
