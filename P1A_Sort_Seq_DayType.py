@@ -193,7 +193,7 @@ mydict['DayType_M03D2H06'] = ['Region', 'Season',    'Weekday', '4-hr']
 mydict['DayType_M03D1H06'] = ['Region', 'Season',               '4-hr']
 
 #week
-mydict['DayType_WKS52H24'] = ['Region',              'Week',    'Hour']
+mydict['DayType_W52D1H24'] = ['Region',              'Week',    'Hour']
 
 #Other examples that could be considered:
 #mydict['DayType_M01D3H24'] = ['Region',              'Day_Type','Hour']
