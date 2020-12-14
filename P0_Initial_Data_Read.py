@@ -138,21 +138,27 @@ def vreclean(vre):
         trgset = pd.merge(trgset,subset,on=list(merge_list),how='left')
         
     #adds new columns: average TRG column and actual load column
-    print(trgset.columns)
     trg_list = [i for i in trgset.columns if 'TRG' in i]
     trgset['TRG_Avg'] = trgset[trg_list].mean(axis=1)
     l_col = load_dur[['R_Subgroup','HOY','Load_Act']]
     out = pd.merge(trgset,l_col,on=['R_Subgroup','HOY'],how='left')
 
-    #adds new columns: best TRG column and TRG evaluate column
-    #fills in column with lowest available TRG #
+    #adds new column: best TRG, fills in column with lowest available TRG value
     out['TRG_Best'] = out['TRG' + str(min(unique_trg))]
-    for n in range(min(unique_trg),max(unique_trg)+1):
+    trg_range = range(min(unique_trg),max(unique_trg)+1)
+    for n in trg_range:
         out['TRG_Best'].fillna(out['TRG' + str(n)], inplace=True)
-    #setting the default TRG evaluate column to Best (may loop through other TRGs later)
-    out['TRG_Eval'] = out['TRG_Best']
-    trg_eval = ['TRG_Avg','TRG_Best','TRG_Eval']
 
+    #adds new column: best TRG ID, fills in column with cooresponding TRG category
+    trg_reverse = trg_range[::-1]
+    for n in trg_reverse:
+        out.loc[out['TRG' + str(n)].notnull(), 'TRG_BID'] = n
+
+    #adds new column: TRG evaluate set to Best by default (may loop through other TRGs later)
+    out['TRG_Eval'] = out['TRG_Best']
+
+    #creates final column list for export
+    trg_eval = ['TRG_Avg','TRG_Best','TRG_BID','TRG_Eval']
     col_list = ['Region','R_Group','R_Subgroup','State','Season','Month','DOY','Hour','HOY','Load_Act']
     col_list = col_list + trg_list + trg_eval
     out = out[col_list]
