@@ -89,11 +89,11 @@ x_column = 'Load'
 ipm_approach(load_dur)
 
 x_name = 'solar'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 ipm_approach(solar_dur)
 
 x_name = 'wind'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 ipm_approach(wind_dur)
 
 # In[3]:
@@ -169,11 +169,11 @@ x_column = 'Load'
 alt_ipm_approach(load_dur)
 
 x_name = 'solar'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 alt_ipm_approach(solar_dur)
 
 x_name = 'wind'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 alt_ipm_approach(wind_dur)
 
 print('completed IPM model approach')

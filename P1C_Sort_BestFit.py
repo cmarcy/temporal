@@ -91,14 +91,14 @@ def bestfit(seg_num):
     
     #solar
     khss2 = pd.merge(solar_dur,khs2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Wind'])
-    khss3 = khss2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khss3 = khss2.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
     khss3.columns = ['Region','Label','Avg']
     khss = pd.merge(khss2,khss3,on=['Region','Label'],how='left')
     khss.to_csv('../outputs/solar/solar_8760_B'+x_name+'_'+num+'.csv')
     
     #wind
     khsw2 = pd.merge(wind_dur,khs2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','Load','Solar'])
-    khsw3 = khsw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khsw3 = khsw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
     khsw3.columns = ['Region','Label','Avg']
     khsw = pd.merge(khsw2,khsw3,on=['Region','Label'],how='left')
     khsw.to_csv('../outputs/wind/wind_8760_B'+x_name+'_'+num+'.csv')

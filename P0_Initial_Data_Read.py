@@ -191,8 +191,8 @@ print()
 print('combined all three datasets')
 print()
 #Wind: average the state data across IPM regions
-wset =  wind_dur2[['R_Subgroup','HOY','TRG_Avg']]
-wset2 = wset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Avg':['mean']})
+wset =  wind_dur2[['R_Subgroup','HOY','TRG_Eval']]
+wset2 = wset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Eval':['mean']})
 wset2.columns = wset2.columns.droplevel(0)
 wset2.columns=['R_Subgroup','HOY','Wind']
 
@@ -201,8 +201,8 @@ unique_w = pd.Series(wset2['R_Subgroup'].unique()).dropna()
 print(len(unique_w),'regions with wind resource')
 
 #Solar: average the state data across IPM regions
-sset = solar_dur2[['R_Subgroup','HOY','TRG_Avg']]
-sset2 = sset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Avg':['mean']})
+sset = solar_dur2[['R_Subgroup','HOY','TRG_Eval']]
+sset2 = sset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Eval':['mean']})
 sset2.columns = sset2.columns.droplevel(0)
 sset2.columns=['R_Subgroup','HOY','Solar']
 

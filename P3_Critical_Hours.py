@@ -203,7 +203,7 @@ def error(x,x2):
 
 ##UNCOMMENT WHICH PROFILE BEING ANALYZED 
 error('load','Load')
-error('solar','TRG_Avg')
-error('wind','TRG_Avg')
+error('solar','TRG_Eval')
+error('wind','TRG_Eval')
 print('finished crtical hour error analysis')
 print()

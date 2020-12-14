@@ -62,11 +62,11 @@ x_column = 'Load'
 seq_approach(load_dur)
 
 x_name = 'solar'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 seq_approach(solar_dur)
 
 x_name = 'wind'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 seq_approach(wind_dur)
 
 print('completed Sequential Approach')
@@ -220,7 +220,7 @@ aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 # In[6]:
 
 x_name = 'solar'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 print(x_name)
 print()
 
@@ -236,7 +236,7 @@ aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 # In[7]:
 
 x_name = 'wind'
-x_column = 'TRG_Avg'
+x_column = 'TRG_Eval'
 print(x_name)
 print()
 

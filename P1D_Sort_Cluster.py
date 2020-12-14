@@ -83,14 +83,14 @@ def cluster(seg_num):
     
     #solar - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
     khass2 = pd.merge(solar_dur,khas2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgW'])
-    khass3 = khass2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khass3 = khass2.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
     khass3.columns = ['Region','Label','Avg']
     khass = pd.merge(khass2,khass3,on=['Region','Label'],how='left')
     khass.to_csv('../outputs/solar/solar_8760_Cluster_'+num+'.csv')
     
     #wind - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
     khasw2 = pd.merge(wind_dur,khas2,on=['R_Subgroup','Season','HOY'],how='left').drop(columns=['Unnamed: 0','AvgL','AvgS'])
-    khasw3 = khasw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Avg':['mean']})
+    khasw3 = khasw2.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
     khasw3.columns = ['Region','Label','Avg']
     khasw = pd.merge(khasw2,khasw3,on=['Region','Label'],how='left')
     khasw.to_csv('../outputs/wind/wind_8760_Cluster_'+num+'.csv')
