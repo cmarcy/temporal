@@ -24,7 +24,7 @@ def cluster(lws,seg_num,fit_list):
 
     unique_ID = pd.Series(lws['ID'].unique()).dropna()
     #TESTING: use lines below for testing, comment out for complete solve
-    unique_ID = unique_ID[0:1]
+    #unique_ID = unique_ID[0:1]
     reg_count = len(pd.Series(unique_ID.unique()).dropna())
 
     #create a new list of column names with Avg
@@ -52,7 +52,7 @@ def cluster(lws,seg_num,fit_list):
         k_hr.append(kh)
         
         #uncomment out print statement below to see progress of this loop, one print per region
-        print(ID + ' kmeans done')   
+        #print(ID + ' kmeans done')   
     
     k_fit = pd.concat(k_fit)
     k_hr = pd.concat(k_hr)
@@ -67,7 +67,7 @@ def cluster(lws,seg_num,fit_list):
     
     #find the number of hours in each segment
     drop_list = ['ID'] + fit_list 
-    hr_cnt = kh.groupby(['ID','Label'],as_index=False).agg({'Season':['count']})
+    hr_cnt = kh.groupby(['ID','Label'],as_index=False).agg({'HOY':['count']})
     hr_cnt.columns = hr_cnt.columns.droplevel(0)
     hr_cnt.columns = ['ID','Label','Hour_Tot']
     kf2 = pd.merge(kf,hr_cnt,on=['ID','Label'],how='left')
@@ -118,7 +118,7 @@ print('Start clustering approach')
 print()
 
 #Initial setup
-lws = lwsset[['R_Subgroup','Season','HOY','Load','Wind','Solar']].copy()
+lws = lwsset[['R_Subgroup','HOY','Load','Wind','Solar']].copy()
 lws['ID'] = lws['R_Subgroup']
 fit_list = ['Load','Wind','Solar']
 
@@ -152,20 +152,20 @@ def reagg(kh2,x_name):
     avg_lws = kh2.groupby(['R_Subgroup','Label'],as_index=False).agg(aggregations)
     avg_lws.columns = avg_lws.columns.droplevel(0)
     avg_lws.columns = ['R_Subgroup','Label','Hour_Tot','AvgLoad','AvgWind','AvgSolar']
-    print(avg_lws.columns)
+
     #merging to this dataset to get the label data to match to hourly
     kh3 = pd.merge(kh2[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
     return kh3
 
 # In[5]:
 
-for x in ['Solar','Wind']:
+for x in ['Load','Solar','Wind']:
 	x_name = x
 	print(x_name)
 	print()
 	outputs_x = outputs_dir+'/'+x_name
 
-	lws = lwsset[['R_Subgroup','Season','HOY','Load','Wind','Solar']].copy()
+	lws = lwsset[['R_Subgroup','HOY','Load','Wind','Solar']].copy()
 	lws['ID'] = lws['R_Subgroup']
 	fit_list = [x_name,'Order']
 
