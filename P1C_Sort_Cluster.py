@@ -67,7 +67,8 @@ def cluster(lws,seg_num,fit_list):
     
     #find the number of hours in each segment
     drop_list = ['ID'] + fit_list 
-    hr_cnt = kh.groupby(['ID','Label'],as_index=False).agg({'HOY':['count']})
+    kh['Cnt_col'] = kh['ID']
+    hr_cnt = kh.groupby(['ID','Label'],as_index=False).agg({'Cnt_col':['count']})
     hr_cnt.columns = hr_cnt.columns.droplevel(0)
     hr_cnt.columns = ['ID','Label','Hour_Tot']
     kf2 = pd.merge(kf,hr_cnt,on=['ID','Label'],how='left')
@@ -114,7 +115,7 @@ seg_num_list = [6,10]
 
 
 #three-way clustering approach on 8760 data
-print('Start clustering approach')
+print('start clustering approach')
 print()
 
 #Initial setup
@@ -176,7 +177,7 @@ for x in ['Load','Solar','Wind']:
 		print()
 		kh2 = cluster(lws,i,fit_list)
 		kh3 = reagg(kh2,x_name)
-		merge_datasets(kh3,i,'B_'+x_name)
+		merge_datasets(kh3,i,'B'+x_name)
 
 print('completed best fit approaches')
 print()
