@@ -96,7 +96,7 @@ def merge_datasets(kh2,seg_num,file_ID):
     print()
     
 # In[3]:
-
+"""
 seg_num_list = [6,10,15,24,40,73,120,146,292,438,730,1095,1752]#,2920,4380]
 
 #TESTING: use lines below for testing, comment out for complete solve
@@ -238,21 +238,22 @@ for x in ['Load','Solar','Wind']:
 
 print('completed best day-type approach')
 print()
-
+"""
 # In[6]:
 
 print('start cluster day-type approach')
 print()
-"""
+
 #TESTING: use lines below for testing, comment out for complete solve
 day_num_list = [6,12]
 
 #initial setup
-lws = lwsset[['R_Subgroup','DOY','Hour','HOY','Load','Wind','Solar']].copy()
+lws = lwsset[['R_Subgroup','DOY','Hour','Load','Wind','Solar']].copy()
 lws['ID'] = lws['R_Subgroup']
 
-pivot = []
+pivot = lws[['ID','R_Subgroup','DOY']].drop_duplicates()
 fit_list = []
+n_list = list(range(1,25))
 
 for x in ['Load','Solar','Wind']:
     lws2 = lws.copy()
@@ -260,15 +261,12 @@ for x in ['Load','Solar','Wind']:
     piv = pd.pivot_table(lws2, values=x, index=['ID','R_Subgroup','DOY'],columns=['Hour'])
     piv.reset_index(inplace=True)
     piv.columns.name = None
-    pivot.append(piv)
+    pivot=pd.merge(pivot,piv,on=['ID','R_Subgroup','DOY'],how='left')
     
-    n_list = list(range(1,25))
     f_list = [x[0:1] + str(n_list[i]) for i in range(len(n_list))] 
     fit_list.extend(f_list)
 
-pivot = pd.concat(pivot)
 lws = pivot.copy()
-print(fit_list)
 
 #loop thru segment list
 for i in day_num_list:
@@ -280,8 +278,17 @@ for i in day_num_list:
 
     #reshape data
     kh = kh.rename(columns={'Label':'D_Label'}).drop(columns=fit_list)
-    kh2 = pd.melt(kh,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name='Avg'+x_name)
-    kh2['Hour'] = pd.to_numeric(kh2['Hour'].str[3:])
+    kh2 = pd.DataFrame(columns = ['ID','R_Subgroup','DOY','D_Label','Hour'])
+    x_list = []
+    
+    for x in ['Load','Solar','Wind']:
+        x_list = ['Avg' + x[0:1] + str(n_list[i]) for i in range(len(n_list))]
+        x_list = ['ID','R_Subgroup','DOY','D_Label']+x_list
+        khx = kh[x_list].copy()
+        khx2 = pd.melt(khx,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name='Avg'+x)
+        kh2 = pd.merge(khx2,kh2,on=['ID','R_Subgroup','DOY','D_Label','Hour'],how='left')
+
+    kh2['Hour'] = pd.to_numeric(kh2['Hour'].str[4:])
     kh2['Label'] = kh2['D_Label'].map(str) + '_' + kh2['Hour'].map(str)
     reg_count = len(pd.Series(kh2['R_Subgroup'].unique()).dropna())
     print('number of rows for each region =',(kh2.shape[0]/reg_count))
@@ -299,7 +306,7 @@ for i in day_num_list:
     kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
     
     #merge data
-    merge_datasets(kh4,6,'KBDT'+x_name)
-"""
+    merge_datasets(kh4,i,'KBDTall')
+
 print('completed best day-type approach')
 print()
