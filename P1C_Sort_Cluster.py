@@ -61,7 +61,7 @@ def cluster(lws,seg_num,fit_list):
     k_hr = pd.concat(k_hr)
     print('number of segments for each region =',(k_fit.shape[0]/reg_count))
     print('number of rows for each region =',(k_hr.shape[0]/reg_count))
-
+    
     kh = pd.merge(k_hr,k_fit,on=['ID','Label'],how='left')
     return kh
 
@@ -75,7 +75,7 @@ def merge_datasets(kh2,seg_num,file_ID):
     khl = kh2.rename(columns={'AvgLoad':'Avg'})
     khl = pd.merge(load_dur,khl,on=['R_Subgroup','HOY'],how='left').drop(columns=['Unnamed: 0','AvgWind','AvgSolar'])
     khl.to_csv('../outputs/load/load_8760_'+file_ID+'_'+num+'.csv')
-    
+
     #solar - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
     khs = pd.merge(solar_dur,kh2,on=['R_Subgroup','HOY'],how='left').drop(columns=['Unnamed: 0','AvgLoad','AvgWind','AvgSolar'])
     khs2 = khs.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
@@ -170,7 +170,7 @@ for i in seg_num_list:
     hr_cnt = hr_cnt.groupby(['ID','Label'],as_index=False).agg({'Cnt_col':['count']})
     hr_cnt.columns = hr_cnt.columns.droplevel(0)
     hr_cnt.columns = ['ID','Label','Hour_Tot']
-    kh2 = pd.merge(kh,hr_cnt,on=['ID','Label'],how='left')
+    kh2 = pd.merge(kh,hr_cnt,on=['ID','Label'],how='left').drop(columns=['Load'])
 
     #merge data
     merge_datasets(kh2,i,'Cluster')
@@ -234,16 +234,16 @@ for x in ['Load','Solar','Wind']:
 		kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
         
         #merge data
-		merge_datasets(kh4,6,'KBDT'+x_name)
+		merge_datasets(kh4,i,'KBDT'+x_name)
 
 print('completed best day-type approach')
 print()
 
 # In[6]:
-"""
+
 print('start cluster day-type approach')
 print()
-
+"""
 #TESTING: use lines below for testing, comment out for complete solve
 day_num_list = [6,12]
 
@@ -300,7 +300,6 @@ for i in day_num_list:
     
     #merge data
     merge_datasets(kh4,6,'KBDT'+x_name)
-
+"""
 print('completed best day-type approach')
 print()
-"""
