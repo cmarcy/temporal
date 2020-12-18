@@ -18,20 +18,12 @@ lwsset = pd.read_csv('../outputs/8760_combo.csv')
 
 def cluster(lws,seg_num,fit_list):
     print('start of loop... wait for it...')
-    k_fit = []
     k_hr = []
-    avg_list = []
 
     unique_ID = pd.Series(lws['ID'].unique()).dropna()
     #TESTING: use lines below for testing, comment out for complete solve
     #unique_ID = unique_ID[0:1]
-    reg_count = len(pd.Series(unique_ID.unique()).dropna())
 
-    #create a new list of column names with Avg
-    for i in fit_list:
-        n = 'Avg' + str(i)
-        avg_list.append(n)
-    
     #loop thru kmeans for each region
     for ID in unique_ID:
         kh = lws.copy()
@@ -40,15 +32,8 @@ def cluster(lws,seg_num,fit_list):
         #create a kmeans fit to the data for each region
         kmeans = KMeans(n_clusters=seg_num)
         model = kmeans.fit(kh[fit_list])
-        kf = pd.DataFrame(model.cluster_centers_, columns=avg_list)
-        
-        kf['ID'] = ID
         kh['ID'] = ID
-        kf['Label'] = kf.index
         kh['Label'] = pd.Series(model.labels_, index=kh.index)
-
-        #appends each regional fit/hourly data into one dataframe, includes cluster labels
-        k_fit.append(kf)
         k_hr.append(kh)
         
         #uncomment out print statement below to see progress of this loop, one print per region
@@ -57,43 +42,38 @@ def cluster(lws,seg_num,fit_list):
     print('end of loop')
     print()
     
-    k_fit = pd.concat(k_fit)
-    k_hr = pd.concat(k_hr)
-    print('number of segments for each region =',(k_fit.shape[0]/reg_count))
-    print('number of rows for each region =',(k_hr.shape[0]/reg_count))
-    
-    kh = pd.merge(k_hr,k_fit,on=['ID','Label'],how='left')
+    kh = pd.concat(k_hr)
     return kh
 
 # In[2]:
 
-def merge_datasets(kh2,seg_num,file_ID):
+def merge_datasets(kh,seg_num,file_ID):
     #merge the fit the final datasets
     num = str(seg_num)
-
-    #load
-    khl = kh2.rename(columns={'AvgLoad':'Avg'})
-    khl = pd.merge(load_dur,khl,on=['R_Subgroup','HOY'],how='left').drop(columns=['Unnamed: 0','AvgWind','AvgSolar'])
-    khl.to_csv('../outputs/load/load_8760_'+file_ID+'_'+num+'.csv')
-
-    #solar - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
-    khs = pd.merge(solar_dur,kh2,on=['R_Subgroup','HOY'],how='left').drop(columns=['Unnamed: 0','AvgLoad','AvgWind','AvgSolar'])
-    khs2 = khs.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
-    khs2.columns = ['Region','Label','Avg']
-    khs3 = pd.merge(khs,khs2,on=['Region','Label'],how='left')
-    khs3.to_csv('../outputs/solar/solar_8760_'+file_ID+'_'+num+'.csv')
+    kh = kh[['R_Subgroup','HOY','Label']]
     
-    #wind - regrouping data because clustered at the IPM region level, but VRE data is at the IPM+state regional level
-    khw = pd.merge(wind_dur,kh2,on=['R_Subgroup','HOY'],how='left').drop(columns=['Unnamed: 0','AvgLoad','AvgWind','AvgSolar'])
-    khw2 = khw.groupby(['Region','Label'],as_index=False).agg({'TRG_Eval':['mean']})
-    khw2.columns = ['Region','Label','Avg']
-    khw3 = pd.merge(khw,khw2,on=['Region','Label'],how='left')
-    khw3.to_csv('../outputs/wind/wind_8760_'+file_ID+'_'+num+'.csv')
+    for x in ['load']:#,'solar','wind']:
+        
+        if x == 'load':
+            dur = load_dur
+            x_col = 'Load'
+        elif x == 'solar':
+            dur = solar_dur
+            x_col = 'TRG_Eval'
+        elif x == 'wind':
+            dur = wind_dur
+            x_col = 'TRG_Eval'
+        
+        reg_count = len(pd.Series(dur['Region'].unique()).dropna())
+        kh2 = pd.merge(dur,kh,on=['R_Subgroup','HOY'],how='left')
+        kf = kh2.groupby(['Region','Label'],as_index=False).agg({x_col:['count','mean']})
+        kf.columns = ['Region','Label','Hour_Tot','Avg']
+        kh3 = pd.merge(kh2,kf,on=['Region','Label'],how='left')
+        print('number of segments for each region =',(kf.shape[0]/reg_count))
+        print('number of rows for each region =',(kh3.shape[0]/reg_count))
+        kh3.to_csv('../outputs/'+x+'/'+x+'_8760_'+file_ID+'_'+num+'.csv')
     
-    print('number of regions in load file:', khl.shape[0]/8760)
-    print('number of regions in solar file:',khs3.shape[0]/8760)
-    print('number of regions in wind file:', khw3.shape[0]/8760)
-    print()
+        print()
     
 # In[3]:
 
@@ -107,11 +87,9 @@ print('start best fit approaches')
 print()
 
 #loop thru dataset list
-for x in ['Load','Solar','Wind']:
-	x_name = x
+for x_name in ['Load','Solar','Wind']:
 	print(x_name)
 	print()
-	outputs_x = outputs_dir+'/'+x_name
     
     #initial setup
 	lws = lwsset[['R_Subgroup','HOY','Load','Wind','Solar']].copy()
@@ -128,18 +106,9 @@ for x in ['Load','Solar','Wind']:
         
         #apply cluster
 		kh = cluster(lws,i,fit_list)
-		print()
-        
-        #find the number of hours in each segment and average of data elements
-		kh[x_name] = kh['Avg'+x_name]
-		aggregations = {'Load':['count','mean'],'Wind':['mean'],'Solar':['mean']}
-		avg_lws = kh.groupby(['R_Subgroup','Label'],as_index=False).agg(aggregations)
-		avg_lws.columns = avg_lws.columns.droplevel(0)
-		avg_lws.columns = ['R_Subgroup','Label','Hour_Tot','AvgLoad','AvgWind','AvgSolar']
-		kh2 = pd.merge(kh[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
 
         #merge data
-		merge_datasets(kh2,i,'Best-Fit-'+x_name)
+		merge_datasets(kh,i,'Best-Fit-'+x_name)
 
 print('completed best fit approaches')
 print()
@@ -162,18 +131,9 @@ for i in seg_num_list:
 
     #apply cluster
     kh = cluster(lws,i,fit_list)
-    print()
-    
-    #find the number of hours in each segment
-    hr_cnt = kh.copy()
-    hr_cnt['Cnt_col'] = hr_cnt['ID']
-    hr_cnt = hr_cnt.groupby(['ID','Label'],as_index=False).agg({'Cnt_col':['count']})
-    hr_cnt.columns = hr_cnt.columns.droplevel(0)
-    hr_cnt.columns = ['ID','Label','Hour_Tot']
-    kh2 = pd.merge(kh,hr_cnt,on=['ID','Label'],how='left').drop(columns=['Load'])
 
     #merge data
-    merge_datasets(kh2,i,'3-Way-Cluster')
+    merge_datasets(kh,i,'3-Way-Cluster')
 
 print('completed clustering approach')
 print()
@@ -181,60 +141,48 @@ print()
 
 # In[5]:
 
-print('start best day-type approach')
-print()
-
 day_num_list = [2,3,5,6,12,18,30,48,72]
 
 #TESTING: use lines below for testing, comment out for complete solve
 day_num_list = [6,12]
 
+#best fit approach on a single dataset (load, wind, or solar) by day
+print('start best day-type approach')
+print()
+
 #loop thru dataset list
 for x in ['Load','Solar','Wind']:
-	x_name = x
-	print(x_name)
-	print()
-	outputs_x = outputs_dir+'/'+x_name
+    x_name = x
+    print(x_name)
+    print()
     
     #initial setup
-	lws = lwsset[['R_Subgroup','DOY','Hour','HOY','Load','Wind','Solar']].copy()
-	lws['ID'] = lws['R_Subgroup']
-    
-	lws = pd.pivot_table(lws, values=x_name, index=['ID','R_Subgroup','DOY'],columns=['Hour'])
-	lws.reset_index(inplace=True)
-	lws.columns.name = None
-	fit_list = list(range(1,25))
+    lws = lwsset[['R_Subgroup','DOY','Hour','HOY','Load','Wind','Solar']].copy()
+    lws['ID'] = lws['R_Subgroup']
+        
+    lws = pd.pivot_table(lws, values=x_name, index=['ID','R_Subgroup','DOY'],columns=['Hour'])
+    lws.reset_index(inplace=True)
+    lws.columns.name = None
+    fit_list = list(range(1,25))
 
     #loop thru segment list
-	for i in day_num_list:
-		print(i,'number of segments')
-		print()
+    for i in day_num_list:
+        print(i,'number of days')
+        print(i*24,'number of segments')
+        print()
         
         #apply cluster
-		kh = cluster(lws,i,fit_list)
-
+        kh = cluster(lws,i,fit_list)
+        
         #reshape data
-		kh = kh.rename(columns={'Label':'D_Label'}).drop(columns=fit_list)
-		kh2 = pd.melt(kh,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name='Avg'+x_name)
-		kh2['Hour'] = pd.to_numeric(kh2['Hour'].str[3:])
-		kh2['Label'] = kh2['D_Label'].map(str) + '_' + kh2['Hour'].map(str)
-		reg_count = len(pd.Series(kh2['R_Subgroup'].unique()).dropna())
-		print('number of rows for each region =',(kh2.shape[0]/reg_count))
-		print()
-        
-        #add other dataelements back in
-		lws2 = lwsset[['R_Subgroup','DOY','Hour','HOY','Load','Wind','Solar']].copy()
-		kh3 = pd.merge(lws2,kh2,on=['R_Subgroup','DOY','Hour'],how='left')
-        
-        #find the number of hours in each segment and average of data elements
-		aggregations = {'Load':['count','mean'],'Wind':['mean'],'Solar':['mean']}
-		avg_lws = kh3.groupby(['R_Subgroup','Label'],as_index=False).agg(aggregations)
-		avg_lws.columns = avg_lws.columns.droplevel(0)
-		avg_lws.columns = ['R_Subgroup','Label','Hour_Tot','AvgLoad','AvgWind','AvgSolar']
-		kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
-        
+        kh = kh.rename(columns={'Label':'D_Label'})
+        kh2 = pd.melt(kh,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name=x_name)
+        kh2['Hour'] = pd.to_numeric(kh2['Hour'])
+        kh2['Label'] = kh2['D_Label'].map(str) + '_' + kh2['Hour'].map(str)
+        kh2['HOY'] = (kh2['Hour']) + (kh2['DOY'] - 1) * 24
+
         #merge data
-		merge_datasets(kh4,i,'Clust-DT-'+x_name)
+        merge_datasets(kh2,i,'Clust-DT-'+x_name)
 
 print('completed best day-type approach')
 print()
@@ -267,43 +215,24 @@ lws = pivot.copy()
 
 #loop thru segment list
 for i in day_num_list:
-    print(i,'number of segments')
+    print(i,'number of days')
+    print(i*24,'number of segments')
     print()
 
     #apply cluster
     kh = cluster(lws,i,fit_list)
 
     #reshape data
-    kh = kh.rename(columns={'Label':'D_Label'}).drop(columns=fit_list)
-    kh2 = pd.DataFrame(columns = ['ID','R_Subgroup','DOY','D_Label','Hour'])
-    x_list = []
-    
-    for x in ['Load','Solar','Wind']:
-        x_list = ['Avg' + x[0:1] + str(n_list[i]) for i in range(len(n_list))]
-        x_list = ['ID','R_Subgroup','DOY','D_Label']+x_list
-        khx = kh[x_list].copy()
-        khx2 = pd.melt(khx,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name='Avg'+x)
-        kh2 = pd.merge(khx2,kh2,on=['ID','R_Subgroup','DOY','D_Label','Hour'],how='left')
-
-    kh2['Hour'] = pd.to_numeric(kh2['Hour'].str[4:])
+    kh = kh.rename(columns={'Label':'D_Label'})
+    col_list = ['ID','R_Subgroup','DOY','D_Label'] + ['L' + str(n_list[i]) for i in range(len(n_list))]
+    kh = kh[col_list]
+    kh2 = pd.melt(kh,id_vars=['ID','R_Subgroup','DOY','D_Label'],var_name='Hour',value_name='AvgLoad')
+    kh2['Hour'] = pd.to_numeric(kh2['Hour'].str[1:])
     kh2['Label'] = kh2['D_Label'].map(str) + '_' + kh2['Hour'].map(str)
-    reg_count = len(pd.Series(kh2['R_Subgroup'].unique()).dropna())
-    print('number of rows for each region =',(kh2.shape[0]/reg_count))
-    print()
-    
-    #add other dataelements back in
-    lws2 = lwsset[['R_Subgroup','DOY','Hour','HOY','Load','Wind','Solar']].copy()
-    kh3 = pd.merge(lws2,kh2,on=['R_Subgroup','DOY','Hour'],how='left')
-    
-    #find the number of hours in each segment and average of data elements
-    aggregations = {'Load':['count','mean'],'Wind':['mean'],'Solar':['mean']}
-    avg_lws = kh3.groupby(['R_Subgroup','Label'],as_index=False).agg(aggregations)
-    avg_lws.columns = avg_lws.columns.droplevel(0)
-    avg_lws.columns = ['R_Subgroup','Label','Hour_Tot','AvgLoad','AvgWind','AvgSolar']
-    kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
+    kh2['HOY'] = (kh2['Hour']) + (kh2['DOY'] - 1) * 24
     
     #merge data
-    merge_datasets(kh4,i,'Clust3-DT')
+    merge_datasets(kh2,i,'Clust3-DT')
 
 print('completed best day-type approach')
 print()
