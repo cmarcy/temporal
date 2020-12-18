@@ -2,6 +2,7 @@
 
 #importing packages needed for analysis
 from sklearn.cluster import KMeans
+from sklearn.cluster import AgglomerativeClustering
 import pandas as pd
 import os
 
@@ -38,6 +39,36 @@ def cluster(lws,seg_num,fit_list):
         
         #uncomment out print statement below to see progress of this loop, one print per region
         #print(ID + ' kmeans done')   
+
+    print('end of loop')
+    print()
+    
+    kh = pd.concat(k_hr)
+    return kh
+
+#alternative cluster approach, currently not used...
+def cluster_alt(lws,seg_num,fit_list):
+    print('start of loop... wait for it...')
+    k_hr = []
+
+    unique_ID = pd.Series(lws['ID'].unique()).dropna()
+    #TESTING: use lines below for testing, comment out for complete solve
+    #unique_ID = unique_ID[0:1]
+
+    #loop thru kmeans for each region
+    for ID in unique_ID:
+        kh = lws.copy()
+        kh = kh[kh['ID']==ID]
+        
+        #create a kmeans fit to the data for each region
+        cluster = AgglomerativeClustering(n_clusters=seg_num, affinity='euclidean', linkage='ward')
+        cluster_results = cluster.fit_predict(kh[fit_list])
+        kh['ID'] = ID
+        kh['Label'] = pd.Series(cluster_results, index=kh.index)
+        k_hr.append(kh)
+        
+        #uncomment out print statement below to see progress of this loop, one print per region
+        #print(ID + ' cluster done')   
 
     print('end of loop')
     print()
