@@ -111,7 +111,9 @@ def segs(x):
     seg_count['Group1'] = seg_count['Group'].str[:1]
     #segment count for clustering
     seg_count.loc[seg_count['Group1'] == 'B', 'Segments'] = seg_count['P_ID']
-    seg_count.loc[seg_count['Group1'] == 'C', 'Segments'] = seg_count['P_ID']
+    seg_count.loc[seg_count['Group1'] == '3', 'Segments'] = seg_count['P_ID']
+    seg_count.loc[seg_count['Group1'] == 'C', 'D'] = seg_count['P_ID']
+    seg_count.loc[seg_count['Group1'] == 'C', 'Segments'] = pd.to_numeric(seg_count['P_ID'])*24
     #segment count for sequential
     seg_count.loc[seg_count['Group1'] == 'S', 'Int'] = seg_count['P_ID'].str[:-3]
     seg_count.loc[seg_count['Group1'] == 'S', 'Segments'] = 8760/pd.to_numeric(seg_count['Int'])

@@ -31,7 +31,8 @@ def plot(x):
     #RMSE_prof['Group'] = group[0]
     
     #creating min and max points for certain categories of data
-    Gframe = pd.DataFrame(['Sequent','BLoad','BSolar','BWind','Cluster']).rename(columns={0:'Group'})
+    Gframe = pd.DataFrame(pd.Series(RMSE_prof['Group'].unique()).dropna()).rename(columns={0:'Group'})
+    Gframe = Gframe[~Gframe['Group'].str.contains('IPM')]
 
     minerror = Gframe.copy()
     minerror['Profile'] = minerror['Group']+'_min'
@@ -77,6 +78,6 @@ def plot(x):
 plot('load')
 plot('solar')
 plot('wind')
-
+print()
 print('end of plots')
 print()

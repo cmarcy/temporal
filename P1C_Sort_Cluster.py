@@ -96,7 +96,7 @@ def merge_datasets(kh2,seg_num,file_ID):
     print()
     
 # In[3]:
-"""
+
 seg_num_list = [6,10,15,24,40,73,120,146,292,438,730,1095,1752]#,2920,4380]
 
 #TESTING: use lines below for testing, comment out for complete solve
@@ -139,7 +139,7 @@ for x in ['Load','Solar','Wind']:
 		kh2 = pd.merge(kh[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
 
         #merge data
-		merge_datasets(kh2,i,'B'+x_name)
+		merge_datasets(kh2,i,'Best-Fit-'+x_name)
 
 print('completed best fit approaches')
 print()
@@ -173,7 +173,7 @@ for i in seg_num_list:
     kh2 = pd.merge(kh,hr_cnt,on=['ID','Label'],how='left').drop(columns=['Load'])
 
     #merge data
-    merge_datasets(kh2,i,'Cluster')
+    merge_datasets(kh2,i,'3-Way-Cluster')
 
 print('completed clustering approach')
 print()
@@ -234,18 +234,15 @@ for x in ['Load','Solar','Wind']:
 		kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
         
         #merge data
-		merge_datasets(kh4,i,'KBDT'+x_name)
+		merge_datasets(kh4,i,'Clust-DT-'+x_name)
 
 print('completed best day-type approach')
 print()
-"""
+
 # In[6]:
 
 print('start cluster day-type approach')
 print()
-
-#TESTING: use lines below for testing, comment out for complete solve
-day_num_list = [6,12]
 
 #initial setup
 lws = lwsset[['R_Subgroup','DOY','Hour','Load','Wind','Solar']].copy()
@@ -306,7 +303,7 @@ for i in day_num_list:
     kh4 = pd.merge(kh3[['R_Subgroup','Label','HOY']],avg_lws,on=['R_Subgroup','Label'],how='left')
     
     #merge data
-    merge_datasets(kh4,i,'KBDTall')
+    merge_datasets(kh4,i,'Clust3-DT')
 
 print('completed best day-type approach')
 print()
