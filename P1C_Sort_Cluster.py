@@ -83,7 +83,7 @@ def merge_datasets(kh,seg_num,file_ID):
     num = str(seg_num)
     kh = kh[['R_Subgroup','HOY','Label']]
     
-    for x in ['load']:#,'solar','wind']:
+    for x in ['load','solar','wind']:
         
         if x == 'load':
             dur = load_dur
@@ -111,7 +111,7 @@ def merge_datasets(kh,seg_num,file_ID):
 seg_num_list = [6,10,15,24,40,73,120,146,292,438,730,1095,1752]#,2920,4380]
 
 #TESTING: use lines below for testing, comment out for complete solve
-seg_num_list = [6,10]
+seg_num_list = [24,120,1752]
 
 #best fit approach on a single dataset (load, wind, or solar)
 print('start best fit approaches')
@@ -175,7 +175,7 @@ print()
 day_num_list = [2,3,5,6,12,18,30,48,72]
 
 #TESTING: use lines below for testing, comment out for complete solve
-day_num_list = [6,12]
+day_num_list = [1,5,73]
 
 #best fit approach on a single dataset (load, wind, or solar) by day
 print('start best day-type approach')
