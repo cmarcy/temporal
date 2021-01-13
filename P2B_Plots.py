@@ -26,7 +26,7 @@ def plot(x):
     RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
     
     #creating categories for plotting the data
-    RMSE_prof = RMSE_prof.drop(2).reset_index(drop=True)
+    RMSE_prof = RMSE_prof.reset_index(drop=True)
     #group = RMSE_prof['Profile'].str.split("_", n = 1, expand = True) 
     #RMSE_prof['Group'] = group[0]
     
