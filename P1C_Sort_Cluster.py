@@ -17,6 +17,7 @@ lwsset = pd.read_csv('../outputs/8760_combo.csv')
 
 # In[1]:
 
+#original approach, currently not used...
 def cluster(lws,seg_num,fit_list):
     print('start of loop... wait for it...')
     k_hr = []
@@ -46,7 +47,7 @@ def cluster(lws,seg_num,fit_list):
     kh = pd.concat(k_hr)
     return kh
 
-#alternative cluster approach, currently not used...
+#alternative cluster approach
 def cluster_alt(lws,seg_num,fit_list):
     print('start of loop... wait for it...')
     k_hr = []
@@ -127,8 +128,9 @@ for x_name in ['Load','Solar','Wind']:
 	lws['ID'] = lws['R_Subgroup']
 	lws = lws.sort_values(['ID',x_name], ascending=[True,False])
 	lws = lws.reset_index(drop=True)
-	lws['Order'] = ( ( lws.index + 8760 ) % 8760 ) + 1
-	fit_list = [x_name,'Order']
+	#Removing order from fit
+	#lws['Order'] = ( ( lws.index + 8760 ) % 8760 ) + 1
+	fit_list = [x_name]#,'Order']
 
     #loop thru segment list
 	for i in seg_num_list:
@@ -136,7 +138,7 @@ for x_name in ['Load','Solar','Wind']:
 		print()
         
         #apply cluster
-		kh = cluster(lws,i,fit_list)
+		kh = cluster_alt(lws,i,fit_list)
 
         #merge data
 		merge_datasets(kh,i,'Best-Fit-'+x_name)
@@ -161,7 +163,7 @@ for i in seg_num_list:
     print()
 
     #apply cluster
-    kh = cluster(lws,i,fit_list)
+    kh = cluster_alt(lws,i,fit_list)
 
     #merge data
     merge_datasets(kh,i,'3-Way-Cluster')
@@ -203,7 +205,7 @@ for x in ['Load','Solar','Wind']:
         print()
         
         #apply cluster
-        kh = cluster(lws,i,fit_list)
+        kh = cluster_alt(lws,i,fit_list)
         
         #reshape data
         kh = kh.rename(columns={'Label':'D_Label'})
@@ -251,7 +253,7 @@ for i in day_num_list:
     print()
 
     #apply cluster
-    kh = cluster(lws,i,fit_list)
+    kh = cluster_alt(lws,i,fit_list)
 
     #reshape data
     kh = kh.rename(columns={'Label':'D_Label'})
