@@ -26,7 +26,7 @@ def plot(x):
     RMSE_prof = pd.merge(RMSE_prof, number_seg, on='Profile', how='left')
     
     #creating categories for plotting the data
-    RMSE_prof = RMSE_prof.drop(2).reset_index(drop=True)
+    RMSE_prof = RMSE_prof.reset_index(drop=True)
     #group = RMSE_prof['Profile'].str.split("_", n = 1, expand = True) 
     #RMSE_prof['Group'] = group[0]
     
@@ -70,6 +70,7 @@ def plot(x):
     plt.title(x+' error and time segment comparison')
     plt.xlabel('Time Segments')
     plt.ylabel('Error (percent of max)')
+    plt.xlim([0,8760])
 
     #exporting    
     RMSE_prof.to_csv('../outputs/error_analysis/'+x+'_profile_RMSE_segs.csv')
