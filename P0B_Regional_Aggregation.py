@@ -12,6 +12,13 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
+
+outputs_load = outputs_dir+'/load'
+if not os.path.exists(outputs_load):
+    os.makedirs(outputs_load)
+    os.makedirs(outputs_dir+'/solar')
+    os.makedirs(outputs_dir+'/wind')
+
 print('output files are written out in parent directory: '+outputs_dir)
 print()
 
@@ -238,6 +245,21 @@ wsset = pd.merge(wset2,sset2,on=['R_Subgroup','HOY'],how='outer')
 
 #Load
 lset = load_dur.copy()
+
+
+#Need to recalculate the peak, here is some example code:
+#peak = load_dur.groupby(['Region'],as_index=False).agg({'Load_Act':max})
+#peak = peak.rename(columns={'Load_Act':'Load_Peak'})
+#load_dur = pd.merge(load_dur,peak, on='Region', how='left')
+#load_dur['Load'] = load_dur['Load_Act'] / load_dur['Load_Peak']
+
+
+
+
+
+
+
+
 
 #print(lset[lset.isna().any(axis=1)])
 unique_l = pd.Series(lset['R_Subgroup'].unique()).dropna()

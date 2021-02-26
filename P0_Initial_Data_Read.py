@@ -12,6 +12,13 @@ parent = os.path.dirname(path)
 outputs_dir = parent+'\outputs'
 if not os.path.exists(outputs_dir):
     os.makedirs(outputs_dir)
+
+outputs_load = outputs_dir+'/load'
+if not os.path.exists(outputs_load):
+    os.makedirs(outputs_load)
+    os.makedirs(outputs_dir+'/solar')
+    os.makedirs(outputs_dir+'/wind')
+
 print('output files are written out in parent directory: '+outputs_dir)
 print()
 
