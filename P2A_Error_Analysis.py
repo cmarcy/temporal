@@ -115,18 +115,18 @@ def segs(x):
     seg_count.loc[seg_count['Group1'] == 'C', 'D'] = seg_count['P_ID']
     seg_count.loc[seg_count['Group1'] == 'C', 'Segments'] = pd.to_numeric(seg_count['P_ID'], errors = 'coerce')*24
     #segment count for sequential
-    seg_count.loc[seg_count['Group1'] == 'S', 'Int'] = seg_count['P_ID'].str[:-3]
-    seg_count.loc[seg_count['Group1'] == 'S', 'Segments'] = 8760/pd.to_numeric(seg_count['Int'])
+    #seg_count.loc[seg_count['Group1'] == 'S', 'Int'] = seg_count['P_ID'].str[:-3]
+    #seg_count.loc[seg_count['Group1'] == 'S', 'Segments'] = 8760/pd.to_numeric(seg_count['Int'])
     #segment count for daytype
-    seg_count.loc[seg_count['Group1'] == 'D', 'M'] = seg_count['P_ID'].str[1:3]
-    seg_count.loc[seg_count['Group1'] == 'D', 'D'] = seg_count['P_ID'].str[4:5]
-    seg_count.loc[seg_count['Group1'] == 'D', 'H'] = seg_count['P_ID'].str[6:]
-    seg_count.loc[seg_count['Group1'] == 'D', 'Segments'] = \
-        pd.to_numeric(seg_count['M'])*pd.to_numeric(seg_count['D'])*pd.to_numeric(seg_count['H'])
+    #seg_count.loc[seg_count['Group1'] == 'D', 'M'] = seg_count['P_ID'].str[1:3]
+    #seg_count.loc[seg_count['Group1'] == 'D', 'D'] = seg_count['P_ID'].str[4:5]
+    #seg_count.loc[seg_count['Group1'] == 'D', 'H'] = seg_count['P_ID'].str[6:]
+    #seg_count.loc[seg_count['Group1'] == 'D', 'Segments'] = \
+    #    pd.to_numeric(seg_count['M'])*pd.to_numeric(seg_count['D'])*pd.to_numeric(seg_count['H'])
     #segment count for IPM
-    seg_count.loc[seg_count['Profile'] == 'IPM', 'Segments'] = 67
-    seg_count.loc[seg_count['Profile'] == 'IPMalt', 'Segments'] = 72
-    seg_count = seg_count[['Profile','Group','Segments']]
+    #seg_count.loc[seg_count['Profile'] == 'IPM', 'Segments'] = 67
+    #seg_count.loc[seg_count['Profile'] == 'IPMalt', 'Segments'] = 72
+    #seg_count = seg_count[['Profile','Group','Segments']]
     #print(seg_count)
     seg_count.to_csv('../outputs/error_analysis/number_segments.csv')
 
