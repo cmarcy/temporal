@@ -23,7 +23,7 @@ def cluster(lws,seg_num,fit_list):
     k_hr = []
 
     unique_ID = pd.Series(lws['ID'].unique()).dropna()
-    #TESTING: use lines below for testing, comment out for complete solve
+    #TESTING: use lines below for testing for a single region, comment out for complete solve
     #unique_ID = unique_ID[0:1]
 
     #loop thru kmeans for each region
@@ -53,7 +53,7 @@ def cluster_alt(lws,seg_num,fit_list):
     k_hr = []
 
     unique_ID = pd.Series(lws['ID'].unique()).dropna()
-    #TESTING: use lines below for testing, comment out for complete solve
+    #TESTING: use lines below for testing for a single region, comment out for complete solve
     #unique_ID = unique_ID[0:1]
 
     #loop thru kmeans for each region
@@ -109,10 +109,10 @@ def merge_datasets(kh,seg_num,file_ID):
     
 # In[3]:
 
-seg_num_list = [6,10,15,24,40,73,120,146,292,438,730,1095,1752]#,2920,4380]
+seg_num_list = [6,12,24,48,72,96,120,144,168,192,216,240,360,480,600,720,840,960,1080,1200]
 
 #TESTING: use lines below for testing, comment out for complete solve
-seg_num_list = [24,48,72,96,120,144,168,192,216,240,360,480,600,720,840,960,1080,1200]
+seg_num_list = [24,48,72]#,96,120,144,168,192,216,240,360,480,600,720,840,960,1080,1200]
 
 #best fit approach on a single dataset (load, wind, or solar)
 print('start best fit approaches')
@@ -174,10 +174,10 @@ print()
 
 # In[5]:
 
-day_num_list = [2,3,5,6,12,18,30,48,72]
+day_num_list = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50]
 
 #TESTING: use lines below for testing, comment out for complete solve
-day_num_list = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50]
+day_num_list = [1,2,3]#,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50]
 
 #best fit approach on a single dataset (load, wind, or solar) by day
 print('start best day-type approach')
