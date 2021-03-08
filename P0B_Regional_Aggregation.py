@@ -237,6 +237,10 @@ wsset = pd.merge(wset2,sset2,on=['R_Subgroup','HOY'],how='outer')
 
 #Load
 lset = load_dur.copy()
+lset = lset[['R_Subgroup','HOY','Load_Act']]
+lset2 = lset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'Load_Act':[sum]})
+lset2.columns = lset2.columns.droplevel(0)
+lset2.columns=['R_Subgroup','HOY','Load']
 
 #calculate peak load
 peak = load_dur.groupby(['R_Subgroup'],as_index=False).agg({'Load_Act':max})
