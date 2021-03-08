@@ -50,6 +50,15 @@ def cleandata(raw):
     #Regions: Merging Regional Data to DF
     x = pd.merge(rl,x,on='Region',how='right')
     
+    #Regions: Add lookup data for alternative regional aggregation
+
+    #Notes: create a CSV with two columns, R_Subgroup = your new regional definition; Region = IPM regions
+    #'Region' has state included in ID for wind and solar, so cannot merge on that. Merging regions on R_Subgroup. 
+    x['Region_OG'] = x['Region']
+    x = x.drop(columns = ['Region'])
+    r_agg = pd.read_csv('inputs/NERC_regions.csv') 
+    x = pd.merge(x,r_agg,on='Region_OG',how='left')
+
     #Regions: For load dataset r_subgroup = region, for wind and solar this will include state ID
     x['R_Subgroup']=x['Region']
     if 'State' in x.columns:
@@ -66,23 +75,6 @@ def cleandata(raw):
     unique_g = pd.Series(x['R_Group'].unique()).dropna()
     print('number of regional groups in dataset (excluding CN) =',unique_g.shape[0])
     print()
-    
-    #Regions: Add lookup data for alternative regional aggregation
-
-    #Notes: create a CSV with two columns, R_Subgroup = your new regional definition; Region = IPM regions
-    
-    #example code:
-    #x['R_Subgroup_OG']=x['R_Subgroup']
-    #x = x.drop(columns = ['R_Subgroup'])
-    #r_agg = pd.read_csv('inputs/region_markets.csv') 
-    #x = pd.merge(x,r_agg,on='Region',how='left')
-    
-    
-    
-    
-    
-    
-    
     
     #Regions: for testing only, otherwise comment out the lines below
     #NOTE: use FRCC for one region, ERC for two regions
@@ -246,20 +238,11 @@ wsset = pd.merge(wset2,sset2,on=['R_Subgroup','HOY'],how='outer')
 #Load
 lset = load_dur.copy()
 
-
-#Need to recalculate the peak, here is some example code:
-#peak = load_dur.groupby(['Region'],as_index=False).agg({'Load_Act':max})
-#peak = peak.rename(columns={'Load_Act':'Load_Peak'})
-#load_dur = pd.merge(load_dur,peak, on='Region', how='left')
-#load_dur['Load'] = load_dur['Load_Act'] / load_dur['Load_Peak']
-
-
-
-
-
-
-
-
+#calculate peak load
+peak = load_dur.groupby(['R_Subgroup'],as_index=False).agg({'Load_Act':max})
+peak = peak.rename(columns={'Load_Act':'Load_Peak'})
+load_dur = pd.merge(load_dur,peak, on='R_Subgroup', how='left')
+load_dur['Load'] = load_dur['Load_Act'] / load_dur['Load_Peak']
 
 #print(lset[lset.isna().any(axis=1)])
 unique_l = pd.Series(lset['R_Subgroup'].unique()).dropna()
