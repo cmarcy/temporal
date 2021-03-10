@@ -43,7 +43,7 @@ def cleandata(raw):
     rl[0] = rl[0].replace('NENGREST','NENG')
     rl[0] = rl[0].replace('WECC','WEC')
     unique_g = pd.Series(rl[0].unique()).dropna()
-    print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
+    #print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
     rl.rename(columns={0 : 'R_Group', 1: 'Drop', 2:'Region'},inplace=True)
     rl = rl[['R_Group','Region']]
     
@@ -59,18 +59,17 @@ def cleandata(raw):
 
     #Regions: Removing Canada
     x = x[x['R_Group']!="CN"]
-    print()
-    print('number of rows in dataset after removing CN =',x.shape[0])
+    #print()
+    #print('number of rows in dataset after removing CN =',x.shape[0])
     unique_r = pd.Series(x['Region'].unique()).dropna()
-    print('number of regions in dataset (excluding CN) =',unique_r.shape[0])
+    #print('number of regions in dataset (excluding CN) =',unique_r.shape[0])
     unique_g = pd.Series(x['R_Group'].unique()).dropna()
-    print('number of regional groups in dataset (excluding CN) =',unique_g.shape[0])
+    #print('number of regional groups in dataset (excluding CN) =',unique_g.shape[0])
     print()
     
-    #Regions: for testing only, otherwise comment out the lines below
+    #Regions: for testing only, otherwise comment out the line below
     #NOTE: use FRCC for one region, ERC for two regions
     #x = x[x['R_Group']=="ERC"]
-    #print('number of rows in dataset for testing =',x.shape[0])
     
     #Time: Add season id
     if 'Season' in x.columns:
@@ -126,6 +125,9 @@ load_dur = load_dur[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hou
 load_dur.to_csv('../outputs/load_long_format.csv')
 print('number of rows in final load dataset =',load_dur.shape[0])
 print('number of regs in final load dataset =',load_dur.shape[0]/8760)
+unique_r = pd.Series(load_dur['Region'].unique()).dropna()
+print('number of hours for each regs in final load dataset =',load_dur.shape[0]/unique_r.shape[0])
+
 print()
 
 # In[3]:
@@ -172,7 +174,7 @@ def vreclean(vre):
     
     #Remove regions without load data (only removes ERC_PHDL)
     out = out.dropna(subset=['Load_Act'])
-    print('number of regs in dataset (with load) =',out.shape[0]/8760)
+    #print('number of regs in dataset (with load) =',out.shape[0]/8760)
     return out
 
 # In[4]:
@@ -229,6 +231,7 @@ wsset = pd.merge(wset2,sset2,on=['R_Subgroup','HOY'],how='outer')
 #Load
 lset = load_dur.copy()
 
+
 #print(lset[lset.isna().any(axis=1)])
 unique_l = pd.Series(lset['R_Subgroup'].unique()).dropna()
 print(len(unique_l),'regions with load')
@@ -247,5 +250,10 @@ print(unique_lws)
 print()
 
 lwsset.to_csv('../outputs/8760_combo.csv')
+print('number of rows in final combo dataset =',lwsset.shape[0])
+print('number of regs in final combo dataset =',lwsset.shape[0]/8760)
+unique_r = pd.Series(lwsset['R_Subgroup'].unique()).dropna()
+print('number of hours for each regs in final combo dataset =',lwsset.shape[0]/unique_r.shape[0])
+print()
 print('completed initial data read')
 print()
