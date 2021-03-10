@@ -43,22 +43,13 @@ def cleandata(raw):
     rl[0] = rl[0].replace('NENGREST','NENG')
     rl[0] = rl[0].replace('WECC','WEC')
     unique_g = pd.Series(rl[0].unique()).dropna()
-    print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
+    #print('number of regional groups in dataset (including CN) =',unique_g.shape[0])
     rl.rename(columns={0 : 'R_Group', 1: 'Drop', 2:'Region'},inplace=True)
     rl = rl[['R_Group','Region']]
     
     #Regions: Merging Regional Data to DF
     x = pd.merge(rl,x,on='Region',how='right')
     
-    #Regions: Add lookup data for alternative regional aggregation
-
-    #Notes: create a CSV with two columns, R_Subgroup = your new regional definition; Region = IPM regions
-    #'Region' has state included in ID for wind and solar, so cannot merge on that. Merging regions on R_Subgroup. 
-    x['Region_OG'] = x['Region']
-    x = x.drop(columns = ['Region'])
-    r_agg = pd.read_csv('inputs/NERC_regions.csv') 
-    x = pd.merge(x,r_agg,on='Region_OG',how='left')
-
     #Regions: For load dataset r_subgroup = region, for wind and solar this will include state ID
     x['R_Subgroup']=x['Region']
     if 'State' in x.columns:
@@ -68,18 +59,23 @@ def cleandata(raw):
 
     #Regions: Removing Canada
     x = x[x['R_Group']!="CN"]
-    print()
-    print('number of rows in dataset after removing CN =',x.shape[0])
+    #print()
+    #print('number of rows in dataset after removing CN =',x.shape[0])
     unique_r = pd.Series(x['Region'].unique()).dropna()
-    print('number of regions in dataset (excluding CN) =',unique_r.shape[0])
+    #print('number of regions in dataset (excluding CN) =',unique_r.shape[0])
     unique_g = pd.Series(x['R_Group'].unique()).dropna()
-    print('number of regional groups in dataset (excluding CN) =',unique_g.shape[0])
+    #print('number of regional groups in dataset (excluding CN) =',unique_g.shape[0])
     print()
     
-    #Regions: for testing only, otherwise comment out the lines below
+    #Regions: Add lookup data for alternative regional aggregation
+    x['R_IPM']=x['R_Subgroup']
+    x = x.drop(columns = ['R_Subgroup'])
+    r_agg = pd.read_csv('inputs/NERC_regions.csv') 
+    x = pd.merge(x,r_agg,on='R_IPM',how='left')
+    
+    #Regions: for testing only, otherwise comment out the line below
     #NOTE: use FRCC for one region, ERC for two regions
     #x = x[x['R_Group']=="ERC"]
-    #print('number of rows in dataset for testing =',x.shape[0])
     
     #Time: Add season id
     if 'Season' in x.columns:
@@ -135,6 +131,9 @@ load_dur = load_dur[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hou
 load_dur.to_csv('../outputs/load_long_format.csv')
 print('number of rows in final load dataset =',load_dur.shape[0])
 print('number of regs in final load dataset =',load_dur.shape[0]/8760)
+unique_r = pd.Series(load_dur['Region'].unique()).dropna()
+print('number of hours for each regs in final load dataset =',load_dur.shape[0]/unique_r.shape[0])
+
 print()
 
 # In[3]:
@@ -156,9 +155,9 @@ def vreclean(vre):
     #adds new columns: average TRG column and actual load column
     trg_list = [i for i in trgset.columns if 'TRG' in i]
     trgset['TRG_Avg'] = trgset[trg_list].mean(axis=1)
-    l_col = load_dur[['R_Subgroup','HOY','Load_Act']]
-    out = pd.merge(trgset,l_col,on=['R_Subgroup','HOY'],how='left')
-
+    l_col = load_dur[['Region','HOY','Load_Act']].rename(columns={'Region':'R_IPM'})
+    out = pd.merge(trgset,l_col,on=['R_IPM','HOY'],how='left')
+    
     #adds new column: best TRG, fills in column with lowest available TRG value
     out['TRG_Best'] = out['TRG' + str(min(unique_trg))]
     trg_range = range(min(unique_trg),max(unique_trg)+1)
@@ -181,7 +180,7 @@ def vreclean(vre):
     
     #Remove regions without load data (only removes ERC_PHDL)
     out = out.dropna(subset=['Load_Act'])
-    print('number of regs in dataset (with load) =',out.shape[0]/8760)
+    #print('number of regs in dataset (with load) =',out.shape[0]/8760)
     return out
 
 # In[4]:
@@ -194,6 +193,8 @@ solar_dur2 = vreclean(solar_dur)
 solar_dur2.to_csv('../outputs/solar_long_format.csv')
 print('number of rows in final solar dataset =',solar_dur2.shape[0])
 print('number of regs in final solar dataset =',solar_dur2.shape[0]/8760)
+unique_r = pd.Series(solar_dur2['Region'].unique()).dropna()
+print('number of hours for each regs in final solar dataset =',solar_dur2.shape[0]/unique_r.shape[0])
 print()
 
 # In[5]:
@@ -206,13 +207,15 @@ wind_dur2 = vreclean(wind_dur)
 wind_dur2.to_csv('../outputs/wind_long_format.csv')
 print('number of rows in final wind dataset =',wind_dur2.shape[0])
 print('number of regs in final wind dataset =',wind_dur2.shape[0]/8760)
+unique_r = pd.Series(wind_dur2['Region'].unique()).dropna()
+print('number of hours for each regs in final wind dataset =',wind_dur2.shape[0]/unique_r.shape[0])
 print()
 
 # In[6]:
 
 print('combined all three datasets')
 print()
-#Wind: average the state data across IPM regions
+#Wind: average the region data across sub_regions
 wset =  wind_dur2[['R_Subgroup','HOY','TRG_Eval']]
 wset2 = wset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Eval':['mean']})
 wset2.columns = wset2.columns.droplevel(0)
@@ -222,7 +225,7 @@ wset2.columns=['R_Subgroup','HOY','Wind']
 unique_w = pd.Series(wset2['R_Subgroup'].unique()).dropna()
 print(len(unique_w),'regions with wind resource')
 
-#Solar: average the state data across IPM regions
+#Solar: average the region data across sub_regions
 sset = solar_dur2[['R_Subgroup','HOY','TRG_Eval']]
 sset2 = sset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'TRG_Eval':['mean']})
 sset2.columns = sset2.columns.droplevel(0)
@@ -235,26 +238,29 @@ print(len(unique_s),'regions with solar resource')
 #combined wind and solar 
 wsset = pd.merge(wset2,sset2,on=['R_Subgroup','HOY'],how='outer')
 
-#Load
-lset = load_dur.copy()
-lset = lset[['R_Subgroup','HOY','Load_Act']]
-lset2 = lset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'Load_Act':[sum]})
+#Load: sum the region data across sub_regions
+lset = load_dur[['R_Subgroup','HOY','Load_Act']]
+lset2 = lset.groupby(['R_Subgroup','HOY'],as_index=False).agg({'Load_Act':['sum']})
 lset2.columns = lset2.columns.droplevel(0)
-lset2.columns=['R_Subgroup','HOY','Load']
+lset2.columns=['R_Subgroup','HOY','Load_Act']
 
-#calculate peak load
+#Load: calculate peak load and load as a percentage of peak
 peak = load_dur.groupby(['R_Subgroup'],as_index=False).agg({'Load_Act':max})
 peak = peak.rename(columns={'Load_Act':'Load_Peak'})
-load_dur = pd.merge(load_dur,peak, on='R_Subgroup', how='left')
-load_dur['Load'] = load_dur['Load_Act'] / load_dur['Load_Peak']
+lset3 = pd.merge(lset2,peak, on='R_Subgroup', how='left')
+lset3['Load'] = lset3['Load_Act'] / lset3['Load_Peak']
+lset3 = lset3.drop(columns = ['Load_Peak'])
+hoy_match = pd.read_csv('inputs/HOY_match.csv') 
+lset3 = pd.merge(lset3,hoy_match, on='HOY', how='left')
 
-#print(lset[lset.isna().any(axis=1)])
-unique_l = pd.Series(lset['R_Subgroup'].unique()).dropna()
+#print(lset3[lset3.isna().any(axis=1)])
+unique_l = pd.Series(lset3['R_Subgroup'].unique()).dropna()
 print(len(unique_l),'regions with load')
 print()
 
 #combined wind and solar and load
-lwsset = pd.merge(lset,wsset,on=['R_Subgroup','HOY'],how='left')
+lwsset = pd.merge(lset3,wsset,on=['R_Subgroup','HOY'],how='left')
+lwsset = lwsset[['R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act','Load','Wind','Solar']]
 
 #fill in missing values with zeros
 lwsnan = lwsset[lwsset.isna().any(axis=1)]
@@ -266,5 +272,10 @@ print(unique_lws)
 print()
 
 lwsset.to_csv('../outputs/8760_combo.csv')
+print('number of rows in final combo dataset =',lwsset.shape[0])
+print('number of regs in final combo dataset =',lwsset.shape[0]/8760)
+unique_r = pd.Series(lwsset['R_Subgroup'].unique()).dropna()
+print('number of hours for each regs in final combo dataset =',lwsset.shape[0]/unique_r.shape[0])
+print()
 print('completed initial data read')
 print()
