@@ -33,7 +33,7 @@ def seq_approach(x):
     hr_list = seq_intervals.columns[1:]
     
     #TESTING: use line below for testing, comment out for complete solve
-    hr_list = seq_intervals.columns[1:2].append(seq_intervals.columns[-1:])
+    hr_list = seq_intervals.columns[-1:]
     print(hr_list)
     print()
     
@@ -206,16 +206,16 @@ x_column = 'Load'
 print(x_name)
 print()
 
-x = setup(load_dur)
-unique_r = pd.Series(x['Region'].unique()).dropna()
-reg_count = unique_r.shape[0]
+#x = setup(load_dur)
+#unique_r = pd.Series(x['Region'].unique()).dropna()
+#reg_count = unique_r.shape[0]
 
 #for key in mydict:
 #    aggregate(key,mydict[key])
 
 #TESTING: use line below for testing, 
 #uncomment the two lines above and comment line below for complete solve
-aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
+#aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
 # In[6]:
 
@@ -224,14 +224,14 @@ x_column = 'TRG_Eval'
 print(x_name)
 print()
 
-x = setup(solar_dur)
-unique_r = pd.Series(x['Region'].unique()).dropna()
-reg_count = unique_r.shape[0]
+#x = setup(solar_dur)
+#unique_r = pd.Series(x['Region'].unique()).dropna()
+#reg_count = unique_r.shape[0]
 
 #for key in mydict:
 #    aggregate(key,mydict[key])
 #TESTING: use line below instead for testing
-aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
+#aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
 # In[7]:
 
@@ -240,14 +240,14 @@ x_column = 'TRG_Eval'
 print(x_name)
 print()
 
-x = setup(wind_dur)
-unique_r = pd.Series(x['Region'].unique()).dropna()
-reg_count = unique_r.shape[0]
+#x = setup(wind_dur)
+#unique_r = pd.Series(x['Region'].unique()).dropna()
+#reg_count = unique_r.shape[0]
 
 #for key in mydict:
 #    aggregate(key,mydict[key])
 #TESTING: use line below instead for testing
-aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
+#aggregate('DayType_M12D3H24',mydict['DayType_M12D3H24'])
 
 print('finished day-type approaches')
 print()
