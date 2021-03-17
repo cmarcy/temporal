@@ -51,7 +51,7 @@ def seq_approach(x):
         print('number of hours for each region =',seq_x.shape[0]/len(unique_r))
         print()
     
-        seq_x2 = seq_x[['Region', 'Season', 'Month', 'DOY', 'Hour','HOY','Load_Act','HT_'+i,x_column, 
+        seq_x2 = seq_x[['Region','R_Group','R_Subgroup','Season','Month','DOY','Hour','HOY','Load_Act','HT_'+i,x_column,
                      i,'Avg_'+i]].rename(columns={i:'Seg_ID','HT_'+i:'Hour_Tot','Avg_'+i: 'Avg'})
         seq_x2.to_csv('../outputs/'+x_name+'/'+x_name+'_8760_Sequent_'+i+'.csv')
 
