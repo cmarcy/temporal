@@ -70,7 +70,8 @@ def cleandata(raw):
     #Regions: Add lookup data for alternative regional aggregation
     x['R_IPM']=x['R_Subgroup']
     x = x.drop(columns = ['R_Subgroup'])
-    r_agg = pd.read_csv('inputs/NERC_regions.csv') 
+    #r_agg = pd.read_csv('inputs/NERC_regions.csv') 
+    r_agg = pd.read_csv('inputs/NERC_regions2.csv') 
     x = pd.merge(x,r_agg,on='R_IPM',how='left')
     
     #Regions: for testing only, otherwise comment out the line below
